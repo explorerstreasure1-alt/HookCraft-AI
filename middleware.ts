@@ -3,20 +3,25 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
-  const userId = request.cookies.get("hc_user_id")?.value;
+  let userId = request.cookies.get("hc_user_id")?.value;
 
   if (!userId) {
-    const newId = crypto.randomUUID();
-    response.cookies.set("hc_user_id", newId, {
+    userId = crypto.randomUUID();
+    response.cookies.set("hc_user_id", userId, {
       maxAge: 60 * 60 * 24 * 365,
       httpOnly: true,
       sameSite: "lax",
       path: "/",
     });
-    response.headers.set("x-user-id", newId);
-  } else {
-    response.headers.set("x-user-id", userId);
   }
+
+  response.cookies.set("hc_uid", userId, {
+    maxAge: 60 * 60 * 24 * 365,
+    httpOnly: false,
+    sameSite: "lax",
+    path: "/",
+  });
+  response.headers.set("x-user-id", userId);
 
   return response;
 }

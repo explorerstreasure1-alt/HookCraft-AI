@@ -8,16 +8,27 @@ const packs = [
   { label: "500 Credits", price: "$14.99", credits: 500, highlight: false },
 ];
 
+function getCookie(name: string): string {
+  if (typeof document === "undefined") return "";
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match?.[1] ?? "";
+}
+
 export default function Pricing() {
   const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    fetch("/api/credits")
-      .then((res) => res.json())
-      .then((data: { credits: number; userId: string }) => {
-        if (data.userId) setUserId(data.userId);
-      })
-      .catch(() => {});
+    const uid = getCookie("hc_uid");
+    if (uid) {
+      setUserId(uid);
+    } else {
+      fetch("/api/credits")
+        .then((res) => res.json())
+        .then((data: { userId: string }) => {
+          if (data.userId) setUserId(data.userId);
+        })
+        .catch(() => {});
+    }
   }, []);
 
   const storeSlug = process.env.NEXT_PUBLIC_LEMONSQUEEZY_STORE ?? "hookcraft";
@@ -27,8 +38,10 @@ export default function Pricing() {
   const variantIds = [variant25, variant100, variant500];
 
   function checkoutUrl(variantId: string) {
-    if (!userId || !variantId) return "#dashboard";
-    return `https://${storeSlug}.lemonsqueezy.com/checkout/buy/${variantId}?checkout%5Bcustom%5D%5Buser_id%5D=${userId}&checkout%5Bembed%5D=0`;
+    if (!variantId) return "#pricing";
+    const uid = userId || getCookie("hc_uid");
+    if (!uid) return "#pricing";
+    return `https://${storeSlug}.lemonsqueezy.com/checkout/buy/${variantId}?checkout%5Bcustom%5D%5Buser_id%5D=${uid}&checkout%5Bembed%5D=0`;
   }
 
   return (
