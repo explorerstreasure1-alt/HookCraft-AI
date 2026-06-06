@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/lib/supabase/auth-context";
 import { useEffect, useMemo, useState } from "react";
 
 type HookSet = {
@@ -35,6 +36,7 @@ const sampleArchive: HookSet[] = [
 ];
 
 export default function HookGenerator() {
+  const { user } = useAuth();
   const [topic, setTopic] = useState("");
   const [platform, setPlatform] = useState(platforms[0]);
   const [tone, setTone] = useState("cinematic");
@@ -125,9 +127,25 @@ export default function HookGenerator() {
             Generate hooks, keep history nested, copy the winner instantly.
           </h2>
           <p className="mt-5 text-base leading-8 text-[#fdfbf7]/68">
-            Powered by Mistral AI. Enter your video topic, pick a tone, and get 3 scroll-stopping hooks in seconds.
+            {user
+              ? "Powered by Mistral AI. Enter your video topic, pick a tone, and get 3 scroll-stopping hooks. Your credits are saved to your account."
+              : "You are using a guest session. Sign in to save your credits across devices."}
           </p>
         </div>
+
+        {!user && (
+          <div className="mt-8 border border-[#d4af37]/30 bg-[#1a2332]/50 p-5 rounded-lg flex items-center justify-between gap-4 flex-col sm:flex-row">
+            <p className="text-sm text-[#fdfbf7]/70">
+              Guest mode: credits are tied to this browser. Sign in for cross-device access.
+            </p>
+            <a
+              href="/auth"
+              className="shrink-0 rounded-full bg-[#d4af37] px-5 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#121214] transition hover:bg-[#f0d36b]"
+            >
+              Sign In Free
+            </a>
+          </div>
+        )}
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
           <aside className="border border-white/10 bg-[#121214] p-5">

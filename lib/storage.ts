@@ -1,59 +1,27 @@
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 const localStore = new Map<string, number>();
 
-function localGet(key: string): number {
-  return localStore.get(key) ?? 0;
-}
-
-async function supabaseFetch(path: string, options: RequestInit = {}) {
-  const res = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
-    ...options,
-    headers: {
-      apikey: supabaseKey!,
-      Authorization: `Bearer ${supabaseKey}`,
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-  if (!res.ok) throw new Error(`Supabase error: ${res.status}`);
-  return res;
-}
-
 export async function getCredits(userId: string): Promise<number> {
-  if (!supabaseUrl || !supabaseKey) return localGet(userId) || 3;
-
   try {
-    const res = await supabaseFetch(
-      `users?id=eq.${encodeURIComponent(userId)}&select=credits`,
-      { headers: { Prefer: "return=representation" } }
-    );
-    const data = await res.json();
-    if (data?.length > 0) return data[0].credits;
+    const { data } = await supabaseAdmin
+      .from("users")
+      .select("credits")
+      .eq("id", userId)
+      .single();
 
-    await supabaseFetch("users", {
-      method: "POST",
-      body: JSON.stringify({ id: userId, credits: 3 }),
-      headers: { Prefer: "return=minimal" },
-    });
+    if (data) return data.credits;
+
+    await supabaseAdmin.from("users").insert({ id: userId, credits: 3 });
     return 3;
   } catch {
-    return localGet(userId) || 3;
+    return localStore.get(userId) ?? 3;
   }
 }
 
 export async function setCredits(userId: string, amount: number): Promise<void> {
-  if (!supabaseUrl || !supabaseKey) {
-    localStore.set(userId, amount);
-    return;
-  }
   try {
-    await supabaseFetch(`users?id=eq.${encodeURIComponent(userId)}`, {
-      method: "PATCH",
-      body: JSON.stringify({ credits: amount }),
-      headers: { Prefer: "return=minimal" },
-    });
+    await supabaseAdmin.from("users").upsert({ id: userId, credits: amount });
   } catch {
     localStore.set(userId, amount);
   }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/lib/supabase/auth-context";
 import { useEffect, useState } from "react";
 
 const packs = [
@@ -8,40 +9,27 @@ const packs = [
   { label: "500 Credits", price: "$14.99", credits: 500, highlight: false },
 ];
 
-function getCookie(name: string): string {
-  if (typeof document === "undefined") return "";
-  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
-  return match?.[1] ?? "";
-}
-
 export default function Pricing() {
-  const [userId, setUserId] = useState("");
+  const { user } = useAuth();
+  const [anonId, setAnonId] = useState("");
 
   useEffect(() => {
-    const uid = getCookie("hc_uid");
-    if (uid) {
-      setUserId(uid);
-    } else {
-      fetch("/api/credits")
-        .then((res) => res.json())
-        .then((data: { userId: string }) => {
-          if (data.userId) setUserId(data.userId);
-        })
-        .catch(() => {});
+    if (!user) {
+      const match = document.cookie.match(/hc_uid=([^;]+)/);
+      if (match) setAnonId(match[1]);
     }
-  }, []);
+  }, [user]);
 
+  const userId = user?.id ?? anonId;
   const storeSlug = process.env.NEXT_PUBLIC_LEMONSQUEEZY_STORE ?? "hookcraft";
-  const variant25 = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_25 ?? "";
-  const variant100 = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_100 ?? "";
-  const variant500 = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_500 ?? "";
-  const variantIds = [variant25, variant100, variant500];
+  const v25 = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_25 ?? "";
+  const v100 = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_100 ?? "";
+  const v500 = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_500 ?? "";
+  const variantIds = [v25, v100, v500];
 
   function checkoutUrl(variantId: string) {
-    if (!variantId) return "#pricing";
-    const uid = userId || getCookie("hc_uid");
-    if (!uid) return "#pricing";
-    return `https://${storeSlug}.lemonsqueezy.com/checkout/buy/${variantId}?checkout%5Bcustom%5D%5Buser_id%5D=${uid}&checkout%5Bembed%5D=0`;
+    if (!variantId || !userId) return "#pricing";
+    return `https://${storeSlug}.lemonsqueezy.com/checkout/buy/${variantId}?checkout%5Bcustom%5D%5Buser_id%5D=${userId}&checkout%5Bembed%5D=0`;
   }
 
   return (
@@ -53,7 +41,9 @@ export default function Pricing() {
             One payment, no subscription, credits never expire.
           </h2>
           <p className="mt-5 text-base leading-8 text-[#fdfbf7]/68">
-            Buy a credit pack once and use it forever. Lemon Squeezy handles the checkout, webhook tops up your balance instantly.
+            {user
+              ? "Your credits are tied to your account. Access them from any device."
+              : "Sign in to tie credits to your account. Otherwise credits stay on this browser only."}
           </p>
         </div>
 
@@ -73,7 +63,7 @@ export default function Pricing() {
                 <span className="pb-2 text-[#fdfbf7]/50">one-time</span>
               </div>
               <p className="mt-5 text-[#fdfbf7]/68">
-                {pack.credits} hook generations. No expiry, no automatic charges.
+                {pack.credits} hook generations. No expiry.
               </p>
               <a
                 href={checkoutUrl(variantIds[i])}

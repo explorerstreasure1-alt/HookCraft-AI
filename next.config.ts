@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@mistralai/mistralai"],
+  serverExternalPackages: ["@mistralai/mistralai", "@supabase/supabase-js"],
 };
 
 export default nextConfig;
