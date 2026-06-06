@@ -1,7 +1,6 @@
 "use client";
 
-import { useAuth } from "@/lib/supabase/auth-context";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const packs = [
   { label: "25 Credits", price: "$1.99", credits: 25, highlight: false },
@@ -10,26 +9,16 @@ const packs = [
 ];
 
 export default function Pricing() {
-  const { user } = useAuth();
-  const [anonId, setAnonId] = useState("");
+  const [loadingIdx, setLoadingIdx] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (!user) {
-      const match = document.cookie.match(/hc_uid=([^;]+)/);
-      if (match) setAnonId(match[1]);
+  async function goToCheckout(idx: number) {
+    setLoadingIdx(idx);
+    const res = await fetch(`/api/checkout?idx=${idx}`);
+    const { url } = await res.json();
+    if (url && !url.startsWith("#")) {
+      location.href = url;
     }
-  }, [user]);
-
-  const userId = user?.id ?? anonId;
-  const storeSlug = process.env.NEXT_PUBLIC_LEMONSQUEEZY_STORE ?? "hookcraft";
-  const v25 = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_25 ?? "";
-  const v100 = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_100 ?? "";
-  const v500 = process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_500 ?? "";
-  const variantIds = [v25, v100, v500];
-
-  function checkoutUrl(variantId: string) {
-    if (!variantId || !userId) return "#pricing";
-    return `https://${storeSlug}.lemonsqueezy.com/checkout/buy/${variantId}?checkout%5Bcustom%5D%5Buser_id%5D=${userId}&checkout%5Bembed%5D=0`;
+    setLoadingIdx(null);
   }
 
   return (
@@ -41,9 +30,7 @@ export default function Pricing() {
             One payment, no subscription, credits never expire.
           </h2>
           <p className="mt-5 text-base leading-8 text-[#fdfbf7]/68">
-            {user
-              ? "Your credits are tied to your account. Access them from any device."
-              : "Sign in to tie credits to your account. Otherwise credits stay on this browser only."}
+            Click any pack to checkout securely with Lemon Squeezy. Credits are added automatically after payment.
           </p>
         </div>
 
@@ -65,16 +52,17 @@ export default function Pricing() {
               <p className="mt-5 text-[#fdfbf7]/68">
                 {pack.credits} hook generations. No expiry.
               </p>
-              <a
-                href={checkoutUrl(variantIds[i])}
+              <button
+                onClick={() => goToCheckout(i)}
+                disabled={loadingIdx !== null}
                 className={`mt-8 inline-flex w-full justify-center rounded-full px-6 py-4 text-sm font-bold uppercase tracking-[0.22em] transition ${
                   pack.highlight
                     ? "bg-[#d4af37] text-[#121214] hover:bg-[#f0d36b]"
                     : "border border-[#d4af37]/60 text-[#d4af37] hover:bg-[#d4af37] hover:text-[#121214]"
                 }`}
               >
-                Buy {pack.label}
-              </a>
+                {loadingIdx === i ? "Redirecting..." : `Buy ${pack.label}`}
+              </button>
             </div>
           ))}
         </div>
