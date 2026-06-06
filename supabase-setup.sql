@@ -17,5 +17,21 @@ CREATE POLICY service_role_all ON public.users
   USING (true)
   WITH CHECK (true);
 
--- 2. Check
+-- 2. Yeni kayıt olunca otomatik users tablosuna ekle
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.users (id)
+  VALUES (new.id)
+  ON CONFLICT (id) DO NOTHING;
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- 3. Check
 SELECT * FROM public.users;
