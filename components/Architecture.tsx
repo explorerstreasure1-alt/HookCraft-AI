@@ -1,20 +1,20 @@
 const stackItems = [
-  "Next.js 15 App Router on Vercel Free Tier",
-  "Supabase PostgreSQL for credit storage",
-  "Mistral AI API route for hook generation",
-  "Lemon Squeezy one-time checkout + webhook",
+  "Next.js 15 — Free hosting on Vercel",
+  "Supabase — PostgreSQL database (free tier)",
+  "Mistral AI — Hook & script generation",
+  "Lemon Squeezy — One-time payments & webhooks",
 ];
 
 const folders = [
-  "app/layout.tsx",
-  "app/page.tsx",
-  "app/api/generate/route.ts",
-  "app/api/credits/route.ts",
-  "app/api/webhook/lemon/route.ts",
-  "middleware.ts",
-  "lib/mistral.ts",
-  "lib/storage.ts",
-  "lib/lemonsqueezy.ts",
+  "app/page.tsx — Landing page",
+  "app/auth/ — Google & email login",
+  "app/api/generate/ — AI hook generation",
+  "app/api/credits/ — Balance check",
+  "app/api/webhook/lemon/ — Payment handler",
+  "app/api/transcribe/ — Video to text",
+  "app/api/analyze/ — Image analysis",
+  "lib/mistral.ts — AI prompts",
+  "lib/storage.ts — Supabase queries",
 ];
 
 export default function Architecture() {
@@ -22,13 +22,12 @@ export default function Architecture() {
     <section id="architecture" className="bg-[#121214] px-5 py-24 text-[#fdfbf7] sm:px-8">
       <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
         <div className="motion-safe:animate-[fadeSlide_900ms_ease-out_both]">
-          <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[#d4af37]">Zero-server-cost stack</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[#d4af37]">How it works</p>
           <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">
-            A production blueprint that fits Vercel like a native product.
+            Built for Vercel. Zero monthly cost. Pay only for what you use.
           </h2>
           <p className="mt-6 max-w-xl text-base leading-8 text-[#fdfbf7]/68">
-            Start free, keep the backend serverless, and move all durable state to Supabase. The AI generation route
-            becomes a thin, auditable layer for credit checks, prompt control, and usage metering.
+            Free hosting on Vercel. Credits stored in Supabase. AI hooks powered by Mistral. Payments via Lemon Squeezy. Everything talks to everything else through simple API routes.
           </p>
           <div className="mt-10 space-y-5">
             {stackItems.map((item, index) => (
@@ -55,15 +54,13 @@ export default function Architecture() {
           <div className="mt-8 border-t border-white/10 pt-6">
             <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#d4af37]">Supabase users schema</p>
             <pre className="mt-4 overflow-x-auto text-xs leading-6 text-[#fdfbf7]/70">
-{`create table public.users (
-  id text primary key,
-  credits integer default 3,
-  created_at timestamptz default now()
-);
+{`users table
+Each user gets:
+• id (from Google/email auth)
+• 3 free credits on signup
+• Credits auto-refill after payment
 
-No auth required. Identity via httpOnly cookie.
-Middleware sets x-user-id header automatically.
-All payments are one-time credit top-ups.`}
+No passwords. No subscriptions.`}
             </pre>
           </div>
         </div>
