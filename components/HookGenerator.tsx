@@ -131,6 +131,21 @@ export default function HookGenerator() {
               ? "Powered by Mistral AI. Enter your video topic, pick a tone, and get 3 scroll-stopping hooks. Your credits are saved to your account."
               : "You are using a guest session. Sign in to save your credits across devices."}
           </p>
+          <div className="mt-6 flex items-center gap-4">
+            <div className="inline-flex items-center gap-3 rounded-full border border-[#d4af37]/40 bg-[#d4af37]/8 px-5 py-3">
+              <span className="text-2xl font-bold text-[#d4af37]">
+                {credits !== null ? credits : "..."}
+              </span>
+              <span className="text-sm uppercase tracking-[0.2em] text-[#fdfbf7]/60">
+                {credits === 1 ? "credit" : "credits"} left
+              </span>
+            </div>
+            {credits !== null && credits <= 1 && (
+              <a href="#pricing" className="text-xs font-semibold uppercase tracking-[0.15em] text-[#d4af37] hover:text-[#f0d36b] transition">
+                Buy credits ↓
+              </a>
+            )}
+          </div>
         </div>
 
         {!user && (
