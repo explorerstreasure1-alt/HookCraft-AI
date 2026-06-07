@@ -97,6 +97,7 @@ export default function KeyScenes() {
   const [renderProgress, setRenderProgress] = useState(0);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [transition, setTransition] = useState("cut");
+  const [filter, setFilter] = useState("none");
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -153,6 +154,24 @@ export default function KeyScenes() {
     setScenes(prev => { const arr = [...prev]; const [item] = arr.splice(from, 1); arr.splice(to, 0, item); return arr; });
   }
 
+  function mergeAdjacent(id: number) {
+    setScenes(prev => {
+      const idx = prev.findIndex(s => s.id === id);
+      if (idx < 0 || idx >= prev.length - 1) return prev;
+      const a = prev[idx], b = prev[idx + 1];
+      const merged: Scene = {
+        ...a, end: b.end,
+        title: `${a.title} + ${b.title}`,
+        visual_clue: a.visual_clue,
+        text: a.text || b.text,
+        hook: a.hook.score >= b.hook.score ? a.hook : b.hook,
+      };
+      const arr = [...prev];
+      arr.splice(idx, 2, merged);
+      return arr;
+    });
+  }
+
   function adjustDuration(id: number, delta: number) {
     setScenes(prev => prev.map(s => {
       if (s.id !== id) return s;
@@ -197,7 +216,11 @@ export default function KeyScenes() {
             ctx.globalAlpha = f / fadeFrames;
             ctx.drawImage(video, 0, 0, 640, 360);
             ctx.globalAlpha = 1;
-            if (scene.text) { ctx.fillStyle = "white"; ctx.font = "bold 28px Inter, sans-serif"; ctx.textAlign = "center"; ctx.fillText(scene.text, 320, 330); }
+          if (scene.text) {
+            ctx.filter = filter === "none" ? "none" : filter === "bw" ? "grayscale(100%)" : filter === "warm" ? "sepia(60%)" : "none";
+            ctx.fillStyle = "white"; ctx.font = "bold 28px Inter, sans-serif"; ctx.textAlign = "center"; ctx.fillText(scene.text, 320, 330);
+            ctx.filter = "none";
+          }
             await new Promise(r => setTimeout(r, 33));
             renderedFrames++;
           }
@@ -289,6 +312,12 @@ export default function KeyScenes() {
                 <select value={transition} onChange={e => setTransition(e.target.value)} className="rounded-full border border-white/10 bg-[#121214] px-4 py-2 text-[10px] uppercase tracking-[0.15em] text-[#fdfbf7]/50 outline-none">
                   <option value="cut">Cut</option>
                   <option value="fade">Fade</option>
+                  <option value="slide">Slide</option>
+                </select>
+                <select value={filter} onChange={e => setFilter(e.target.value)} className="rounded-full border border-white/10 bg-[#121214] px-4 py-2 text-[10px] uppercase tracking-[0.15em] text-[#fdfbf7]/50 outline-none">
+                  <option value="none">Normal</option>
+                  <option value="bw">B&W</option>
+                  <option value="warm">Warm</option>
                 </select>
                 <span className="text-[10px] text-[#fdfbf7]/25">{selectedCount} scenes · {fmtTime(totalDuration)} total</span>
               </div>
@@ -361,6 +390,12 @@ export default function KeyScenes() {
                           className="shrink-0 w-8 flex items-center justify-center text-[10px] text-[#d4af37]/30 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition">
                           {copied === s.hook.text ? '\u2713' : '\uD83D\uDCCB'}
                         </button>
+                        {i < scenes.length - 1 && (
+                          <button onClick={() => mergeAdjacent(s.id)} title="Merge with next scene"
+                            className="shrink-0 w-8 flex items-center justify-center text-[10px] text-[#fdfbf7]/15 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition">
+                            {'\u2194'}
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
