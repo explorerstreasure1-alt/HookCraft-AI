@@ -1,6 +1,22 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import PremiumButton from "./PremiumButton";
 
+const exampleHooks = [
+  "This AI tool writes viral video hooks in seconds. Creators are sleeping on it.",
+  "I stopped scripting my TikToks manually and my views tripled overnight.",
+  "The first 3 seconds decide everything. Here is how AI gives you the right words.",
+];
+
 export default function Hero() {
+  const [hookIdx, setHookIdx] = useState(0);
+
+  useEffect(() => {
+    const i = setInterval(() => setHookIdx((p) => (p + 1) % exampleHooks.length), 4000);
+    return () => clearInterval(i);
+  }, []);
+
   return (
     <section
       id="hero"
@@ -25,16 +41,30 @@ export default function Hero() {
             Build the first three seconds before you film.
           </h1>
           <p className="mt-7 max-w-2xl text-base leading-8 text-[#fdfbf7]/74 sm:text-lg">
-            A Vercel-native AI video hook and script architect for creators who need scroll-stopping openings,
-            structured scripts, and credit-based monetization from day one.
+            Stop staring at a blank page. Mistral AI writes scroll-stopping hooks and full scripts for TikTok, Shorts, Reels, and LinkedIn. Copy, paste, record.
           </p>
+
+          <div className="mt-8 border border-[#d4af37]/20 bg-[#d4af37]/5 rounded-2xl p-5 backdrop-blur-sm">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]/60 mb-3">AI-generated example</p>
+            <p className="text-lg leading-8 text-[#fdfbf7]/80 motion-safe:animate-[riseIn_600ms_ease-out_both]" key={hookIdx}>
+              "{exampleHooks[hookIdx]}"
+            </p>
+          </div>
+
+          <div className="mt-5 flex flex-wrap gap-7 text-sm text-[#fdfbf7]/40">
+            <span>No credit card</span>
+            <span>3 free hooks</span>
+            <span>No subscription</span>
+            <span>Pay as you go</span>
+          </div>
+
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <PremiumButton href="#dashboard">Generate Hooks</PremiumButton>
             <a
-              href="#architecture"
+              href="#pricing"
               className="inline-flex items-center justify-center rounded-full border border-[#fdfbf7]/18 px-6 py-3 text-sm font-semibold uppercase tracking-[0.22em] text-[#fdfbf7] transition hover:border-[#d4af37] hover:text-[#d4af37]"
             >
-              View Blueprint
+              View Pricing
             </a>
           </div>
         </div>

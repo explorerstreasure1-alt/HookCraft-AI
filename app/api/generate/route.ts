@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generateHooks } from "@/lib/mistral";
+import { generateHooks, generateScript } from "@/lib/mistral";
 import { getCredits, decrementCredits } from "@/lib/storage";
 
 const cooldowns = new Map<string, number>();
@@ -30,14 +30,14 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: { topic?: string; platform?: string; tone?: string };
+  let body: { topic?: string; platform?: string; tone?: string; mode?: string };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { topic = "", platform = "TikTok", tone = "cinematic" } = body;
+  const { topic = "", platform = "TikTok", tone = "cinematic", mode = "hooks" } = body;
 
   if (!topic.trim()) {
     return NextResponse.json({ error: "Topic is required" }, { status: 400 });
@@ -65,6 +65,21 @@ export async function POST(request: Request) {
   cooldowns.set(rateKey, now);
 
   try {
+    const isScript = mode === "script";
+
+    if (isScript) {
+      const script = await generateScript({
+        topic: topic.trim(),
+        platform,
+        tone: tone as "cinematic" | "contrarian" | "urgent",
+      });
+
+      await decrementCredits(userId);
+      const newCredits = await getCredits(userId);
+
+      return NextResponse.json({ script, credits: newCredits, topic: topic.trim(), platform, mode: "script" });
+    }
+
     const hooks = await generateHooks({
       topic: topic.trim(),
       platform,
