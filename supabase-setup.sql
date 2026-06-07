@@ -12,10 +12,14 @@ CREATE TABLE IF NOT EXISTS public.users (
 
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY service_role_all ON public.users
-  FOR ALL
-  USING (true)
-  WITH CHECK (true);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT FROM pg_policies WHERE policyname = 'service_role_all' AND tablename = 'users'
+  ) THEN
+    CREATE POLICY service_role_all ON public.users FOR ALL USING (true) WITH CHECK (true);
+  END IF;
+END $$;
 
 -- 2. Yeni kayıt olunca otomatik users tablosuna ekle
 CREATE OR REPLACE FUNCTION public.handle_new_user()
