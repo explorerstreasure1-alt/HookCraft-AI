@@ -39,7 +39,7 @@ async function extractAudio(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
   const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
 
-  const duration = Math.min(audioBuffer.duration, 59);
+  const duration = Math.min(audioBuffer.duration, 300);
   const sampleCount = Math.floor(duration * 16000);
   const offlineCtx = new OfflineAudioContext(1, sampleCount, 16000);
   const source = offlineCtx.createBufferSource();
@@ -340,7 +340,7 @@ export default function HookGenerator() {
                   <p className="text-sm text-[#d4af37] animate-pulse">Analyzing image...</p>
                 ) : (
                   <label className="cursor-pointer block">
-                    <p className="text-sm text-[#fdfbf7]/35">Drop screenshot, video or audio</p>
+                    <p className="text-sm text-[#fdfbf7]/35">Drop screenshot, video or audio (up to 5 min)</p>
                     <p className="text-[10px] text-[#fdfbf7]/18 mt-1">AI reads images & transcribes speech</p>
                     <input type="file" accept="image/*,video/*,audio/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
                   </label>
