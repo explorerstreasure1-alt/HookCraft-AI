@@ -357,9 +357,9 @@ export default function KeyScenes() {
                             className="mt-2 w-full bg-black/30 border border-white/5 px-2.5 py-1.5 text-[10px] text-[#fdfbf7]/50 outline-none focus:border-[#d4af37]/40 rounded-lg placeholder:text-[#fdfbf7]/12"
                           />
                         </div>
-                        <button onClick={() => copyHook(s.hook.text)}
+                        <button onClick={() => { navigator.clipboard.writeText(s.hook.text); setCopied(s.hook.text); setTimeout(() => setCopied(""), 1400); }}
                           className="shrink-0 w-8 flex items-center justify-center text-[10px] text-[#d4af37]/30 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition">
-                          {copied === s.hook.text ? "{'\u2713'}" : "{'\uD83D\uDCCB'}"}
+                          {copied === s.hook.text ? '\u2713' : '\uD83D\uDCCB'}
                         </button>
                       </div>
                     </div>
@@ -380,8 +380,4 @@ export default function KeyScenes() {
       </div>
     </section>
   );
-}
-
-function copyHook(text: string) {
-  try { navigator.clipboard.writeText(text); } catch {}
 }
