@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateHooks, generateScript, generateSeries, generateKeyMoments } from "@/lib/mistral";
 import { getCredits, setCredits } from "@/lib/storage";
+import { getAdmin } from "@/lib/supabase/admin";
 
 const cooldowns = new Map<string, number>();
 
@@ -41,6 +42,7 @@ export async function POST(request: Request) {
 
     const newCredits = credits - cost;
     await setCredits(userId, newCredits);
+    try { getAdmin()?.rpc("increment_stat", { stat_key: "generated" }); } catch {}
 
     return NextResponse.json({ ...data, credits: newCredits, mode, topic: topic.trim(), platform });
   } catch (err) {

@@ -17,6 +17,14 @@ const stats = [
 
 export default function Hero() {
   const [hookIdx, setHookIdx] = useState(0);
+  const [stats, setStats] = useState({ visitors: 0, generated: 0 });
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then(r => r.json())
+      .then(d => setStats(d))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const i = setInterval(() => setHookIdx((p) => (p + 1) % exampleHooks.length), 4000);
@@ -93,12 +101,14 @@ export default function Hero() {
           </div>
 
           <div className="mt-12 flex gap-8 flex-wrap">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <p className="text-2xl font-bold text-[#d4af37]">{s.value}</p>
-                <p className="text-xs text-[#fdfbf7]/30 mt-1">{s.label}</p>
-              </div>
-            ))}
+            <div>
+              <p className="text-3xl font-bold text-[#d4af37]">{stats.visitors.toLocaleString()}</p>
+              <p className="text-xs text-[#fdfbf7]/30 mt-1">Visitors</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-[#d4af37]">{stats.generated.toLocaleString()}</p>
+              <p className="text-xs text-[#fdfbf7]/30 mt-1">Hooks Generated</p>
+            </div>
           </div>
         </div>
       </div>

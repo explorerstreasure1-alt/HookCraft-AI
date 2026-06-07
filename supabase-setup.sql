@@ -37,5 +37,22 @@ CREATE TRIGGER on_auth_user_created
 AFTER INSERT ON auth.users
 FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
--- 3. Check
+-- 3. Site stats
+CREATE TABLE IF NOT EXISTS public.stats (
+  key   TEXT PRIMARY KEY,
+  value INTEGER NOT NULL DEFAULT 0
+);
+
+INSERT INTO public.stats (key, value) VALUES ('visitors', 0) ON CONFLICT (key) DO NOTHING;
+INSERT INTO public.stats (key, value) VALUES ('generated', 0) ON CONFLICT (key) DO NOTHING;
+
+CREATE OR REPLACE FUNCTION public.increment_stat(stat_key TEXT)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.stats SET value = value + 1 WHERE key = stat_key;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 4. Check
 SELECT * FROM public.users;
+SELECT * FROM public.stats;
