@@ -13,6 +13,7 @@ export default function Pricing() {
 
   async function goToCheckout(idx: number) {
     setLoadingIdx(idx);
+    sessionStorage.setItem("hc_bought", "1");
     const res = await fetch(`/api/checkout?idx=${idx}`);
     const { url } = await res.json();
     if (url && !url.startsWith("#")) {

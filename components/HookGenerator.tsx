@@ -74,7 +74,14 @@ export default function HookGenerator() {
     fetchCredits();
 
     function onVisible() {
-      if (document.visibilityState === "visible") fetchCredits();
+      if (document.visibilityState !== "visible") return;
+      if (sessionStorage.getItem("hc_bought") === "1") {
+        sessionStorage.removeItem("hc_bought");
+        setTimeout(() => fetchCredits(), 5000);
+        setTimeout(() => fetchCredits(), 10000);
+      } else {
+        fetchCredits();
+      }
     }
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
