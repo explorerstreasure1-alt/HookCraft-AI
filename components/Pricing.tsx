@@ -16,7 +16,7 @@ export default function Pricing() {
     const res = await fetch(`/api/checkout?idx=${idx}`);
     const { url } = await res.json();
     if (url && !url.startsWith("#")) {
-      location.href = url;
+      window.open(url, "_blank");
     }
     setLoadingIdx(null);
   }

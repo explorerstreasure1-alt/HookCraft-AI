@@ -58,7 +58,14 @@ export default function HookGenerator() {
     fetch("/api/credits")
       .then((res) => res.json())
       .then((data: { credits: number }) => {
-        if (data.credits !== undefined) setCredits(data.credits);
+        if (data.credits !== undefined) {
+          const prev = prevCredits.current;
+          if (prev !== null && data.credits > prev) {
+            showToast(`Credits added! You now have ${data.credits} credits.`, "success");
+          }
+          setCredits(data.credits);
+          prevCredits.current = data.credits;
+        }
       })
       .catch(() => setCredits(3));
   }
@@ -66,38 +73,12 @@ export default function HookGenerator() {
   useEffect(() => {
     fetchCredits();
 
-    const params = new URLSearchParams(location.search);
-    if (params.get("checkout") === "success") {
-      setTimeout(() => {
-        fetch("/api/credits")
-          .then((r) => r.json())
-          .then((d: { credits: number }) => {
-            if (d.credits !== undefined) {
-              setCredits(d.credits);
-              showToast(`Credits added! You have ${d.credits} credits.`, "success");
-            }
-          });
-      }, 3000);
-      const url = new URL(location.href);
-      url.searchParams.delete("checkout");
-      history.replaceState(null, "", url.toString());
-    }
-
     function onVisible() {
       if (document.visibilityState === "visible") fetchCredits();
     }
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, []);
-
-  useEffect(() => {
-    if (prevCredits.current !== null && credits !== null && credits < prevCredits.current) {
-      if (credits === 0) {
-        showToast("Credits depleted. Buy a pack to continue.", "info");
-      }
-    }
-    prevCredits.current = credits;
-  }, [credits]);
 
   async function handleGenerate() {
     if (loading) return;
