@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "HookCraft AI | Video Hook and Script Architect",
   description:
-    "HookCraft AI is a cinematic AI video hook and script architect for creators, built around a Vercel-native serverless architecture. Generate scroll-stopping hooks for TikTok, YouTube Shorts, Instagram Reels, and LinkedIn Video.",
+    "HookCraft AI generates scroll-stopping video hooks and scripts for creators. AI-powered openings for TikTok, YouTube Shorts, Instagram Reels, and LinkedIn Video.",
   openGraph: {
     title: "HookCraft AI | Video Hook and Script Architect",
     description:

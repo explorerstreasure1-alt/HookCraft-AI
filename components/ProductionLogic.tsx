@@ -20,7 +20,7 @@ export default function ProductionLogic() {
             The backend stays small: verify, generate, decrement, fulfill.
           </h2>
           <p className="mt-5 text-base leading-8 text-[#fdfbf7]/68">
-            Mistral AI, Supabase, and Lemon Squeezy secrets stay server-side. The client only receives hooks and credit counts.
+            AI, database, and payment secrets stay server-side. The client only receives hooks and credit counts.
           </p>
           <div className="mt-10 space-y-5">
             {launchSteps.map((step, index) => (
@@ -38,9 +38,9 @@ export default function ProductionLogic() {
 {`POST /api/generate
 1. Read { topic, platform, tone } from body
 2. Get userId from x-user-id header (set by middleware)
-3. Check credits from Supabase users table
+3. Check credits from database
 4. Reject with 402 when credits are empty
-5. Send prompt to Mistral AI (mistral-small-latest)
+5. Send prompt to AI
 6. Decrement one credit
 7. Return { hooks, credits } to dashboard`}
           </pre>
@@ -51,7 +51,7 @@ export default function ProductionLogic() {
 1. Read raw request body
 2. Validate x-signature with HMAC SHA-256
 3. order_created -> extract credit amount from variant name
-4. credits += amount in Supabase users table
+4. credits += amount in database
 5. Return { received: true }`}
             </pre>
           </div>

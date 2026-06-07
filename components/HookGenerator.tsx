@@ -225,7 +225,7 @@ export default function HookGenerator() {
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[#d4af37]">Creator dashboard</p>
           <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Hooks, scripts, hashtags, thumbnails, series.</h2>
-          <p className="mt-5 text-base leading-8 text-[#fdfbf7]/68">{user ? "Everything you need to post. Powered by Mistral AI." : "Guest mode. Sign in to save credits."}</p>
+          <p className="mt-5 text-base leading-8 text-[#fdfbf7]/68">{user ? "Everything you need to post. Powered by AI." : "Guest mode. Sign in to save credits."}</p>
           <div className="mt-8 flex items-stretch gap-4 flex-wrap">
             <div className="relative overflow-hidden rounded-2xl border border-[#d4af37]/30 bg-gradient-to-br from-[#1a2332] to-[#0f151c] p-6 min-w-[180px] flex-1">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(212,175,55,0.08),transparent_60%)]" />

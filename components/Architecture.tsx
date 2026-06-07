@@ -1,6 +1,6 @@
 const steps = [
   { num: "01", title: "Drop or type your idea", desc: "Upload a screenshot, paste a video link, or just type what your video is about." },
-  { num: "02", title: "AI writes your hooks", desc: "Pick a style and platform. Mistral AI generates scroll-stopping hooks with virality scores." },
+  { num: "02", title: "AI writes your hooks", desc: "Pick a style and platform. AI generates scroll-stopping hooks with virality scores." },
   { num: "03", title: "Copy, paste, record", desc: "Grab the best hook, film your video. Full scripts, hashtags, and thumbnails included." },
   { num: "04", title: "Go viral, repeat", desc: "Use Key Scenes to find the best moments from longer videos. Keep creating, keep growing." },
 ];
