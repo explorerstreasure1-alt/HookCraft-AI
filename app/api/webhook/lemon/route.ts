@@ -18,9 +18,9 @@ export async function POST(request: Request) {
     meta?: { event_name?: string; custom_data?: { user_id?: string } };
     data?: {
       attributes?: {
+        total?: number;
         variant_name?: string;
-        first_order_item?: { variant_name?: string };
-        order_number?: number;
+        first_order_item?: { variant_name?: string; product_name?: string };
       };
     };
   };
@@ -33,14 +33,17 @@ export async function POST(request: Request) {
 
   console.log("[webhook] event:", payload.meta?.event_name);
   console.log("[webhook] userId:", payload.meta?.custom_data?.user_id);
-  console.log("[webhook] variant:", payload.data?.attributes?.variant_name || payload.data?.attributes?.first_order_item?.variant_name);
+  console.log("[webhook] product:", payload.data?.attributes?.first_order_item?.product_name);
 
   const eventName = payload.meta?.event_name ?? "";
   const userId = payload.meta?.custom_data?.user_id;
+  const productName = payload.data?.attributes?.first_order_item?.product_name ?? "";
   const variantName =
     payload.data?.attributes?.variant_name ??
     payload.data?.attributes?.first_order_item?.variant_name ??
     "";
+
+  console.log("[webhook] variant:", variantName);
 
   if (!userId) {
     console.log("[webhook] no userId in custom_data");
@@ -48,14 +51,15 @@ export async function POST(request: Request) {
   }
 
   if (eventName !== "order_created") {
-    console.log("[webhook] skipping non-order event");
     return NextResponse.json({ received: true });
   }
 
-  const match = variantName.match(/(\d+)\s*credit/i);
-  const creditAmount = match ? parseInt(match[1], 10) : 100;
+  let creditAmount = 25;
+  const total = payload.data?.attributes?.total ?? 0;
+  if (total >= 1400) creditAmount = 500;
+  else if (total >= 400) creditAmount = 100;
 
-  console.log("[webhook] adding", creditAmount, "credits to", userId);
+  console.log("[webhook] adding", creditAmount, "credits to", userId, "(total:", total, "cents)");
 
   try {
     await addCredits(userId, creditAmount);
