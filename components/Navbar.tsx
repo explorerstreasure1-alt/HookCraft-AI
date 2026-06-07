@@ -32,8 +32,10 @@ export default function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#121214]/70 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
-        <a href="#hero" className="text-sm font-semibold uppercase tracking-[0.34em] text-[#fdfbf7]">
-          HookCraft AI
+        <a href="#hero" className="flex items-center gap-2 group">
+          <span className="text-xl font-bold tracking-[-0.04em] text-[#d4af37]">&#9851;</span>
+          <span className="text-sm font-semibold uppercase tracking-[0.28em] text-[#fdfbf7]">HookCraft</span>
+          <span className="text-[10px] font-bold text-[#d4af37] bg-[#d4af37]/10 px-1.5 py-0.5 rounded">.AI</span>
         </a>
         <div className="hidden items-center gap-7 text-xs uppercase tracking-[0.22em] text-[#fdfbf7]/62 md:flex">
           <a className="transition hover:text-[#d4af37]" href="#architecture">Architecture</a>

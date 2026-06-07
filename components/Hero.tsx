@@ -40,6 +40,10 @@ export default function Hero() {
 
       <div className="relative mx-auto w-full max-w-7xl px-5 py-24 sm:px-8">
         <div className="max-w-3xl motion-safe:animate-[riseIn_900ms_ease-out_both]">
+          <div className="flex items-center gap-3 mb-5">
+            <span className="text-3xl font-bold text-[#d4af37]">&#9851;</span>
+            <span className="text-lg font-semibold uppercase tracking-[0.4em] text-[#d4af37] sm:text-xl">HookCraft<span className="text-sm align-super text-[#fdfbf7]/50">.AI</span></span>
+          </div>
           <div className="flex items-center gap-3 mb-6">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[#d4af37]/30 bg-[#d4af37]/10 px-3 py-1 text-[11px] font-semibold text-[#d4af37]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37] animate-pulse" />
