@@ -104,7 +104,7 @@ export default function HookGenerator() {
   const [topic, setTopic] = useState("");
   const [platform, setPlatform] = useState(platforms[0]);
   const [tone, setTone] = useState("cinematic");
-  const [mode, setMode] = useState<"hooks" | "script" | "series" | "moments">("hooks");
+  const [mode, setMode] = useState<"hooks" | "script" | "series">("hooks");
   const [credits, setCredits] = useState<number | null>(null);
   const [archive, setArchive] = useState<ResultSet[]>([sample]);
   const [activeId, setActiveId] = useState(sample.id);
@@ -142,7 +142,7 @@ export default function HookGenerator() {
 
   async function handleGenerate() {
     if (loading) return;
-  const cost = mode === "series" || mode === "moments" ? 3 : 1;
+  const cost = mode === "series" ? 3 : 1;
     if (!topic.trim()) { setError("Enter a topic."); return; }
     if (credits !== null && credits < cost) { setError(`Need ${cost} credits. You have ${credits}.`); return; }
     setError(""); setLoading(true);
@@ -360,25 +360,49 @@ export default function HookGenerator() {
                   <select value={tone} onChange={e => setTone(e.target.value)} className="mt-3 w-full border border-white/10 bg-[#121214] px-4 py-3 text-sm text-[#fdfbf7] outline-none focus:border-[#d4af37]/70"><option value="cinematic">Cinematic</option><option value="contrarian">Contrarian</option><option value="urgent">Urgent</option></select></div>
               </div>
               <div className="mt-4 flex rounded-full border border-white/10 bg-[#121214] p-1">
-                {(["hooks", "script", "series", "moments"] as const).map(m => (
-                  <button key={m} onClick={() => setMode(m)} className={`flex-1 rounded-full px-2 py-2 text-[9px] font-semibold uppercase tracking-[0.1em] transition ${mode === m ? "bg-[#d4af37] text-[#121214]" : "text-[#fdfbf7]/50"}`}>
-                    {m === "hooks" ? "Hooks" : m === "script" ? "Script" : m === "series" ? "Series" : "Moments"}
+                {(["hooks", "script", "series"] as const).map(m => (
+                  <button key={m} onClick={() => setMode(m)} className={`flex-1 rounded-full px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] transition ${mode === m ? "bg-[#d4af37] text-[#121214]" : "text-[#fdfbf7]/50"}`}>
+                    {m === "hooks" ? "Hooks" : m === "script" ? "Script" : "Series 3cr"}
                   </button>
                 ))}
               </div>
               {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
-              {transcript && (
-                <div className="mt-4 border border-[#d4af37]/20 bg-[#1a2332]/30 p-3 rounded-lg">
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] mb-1">Transcript ready</p>
-                  <p className="text-xs text-[#fdfbf7]/50 line-clamp-3">{transcript}</p>
-                  <p className="mt-2 text-[10px] text-[#fdfbf7]/25">Switch to Moments mode to find key scenes</p>
-                </div>
-              )}
               <button onClick={handleGenerate} disabled={loading || (credits !== null && credits < cost)}
                 className="mt-4 w-full rounded-full bg-[#d4af37] px-6 py-4 text-sm font-bold uppercase tracking-[0.22em] text-[#121214] hover:bg-[#f0d36b] disabled:cursor-not-allowed disabled:bg-[#fdfbf7]/20 disabled:text-[#fdfbf7]/45">
                 {loading ? "Generating..." : `Generate (${cost} credit${cost > 1 ? "s" : ""})`}
               </button>
             </div>
+
+            {transcript && (
+              <div className="border border-[#d4af37]/20 bg-gradient-to-r from-[#1a2332]/80 to-[#121214] p-6 rounded-2xl">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">🎬</span>
+                  <div>
+                    <p className="text-sm font-semibold text-[#fdfbf7]">Video transcript ready</p>
+                    <p className="text-[10px] text-[#fdfbf7]/30">Find the most viral-worthy scenes automatically</p>
+                  </div>
+                </div>
+                <p className="text-xs text-[#fdfbf7]/40 line-clamp-2 mb-4">{transcript}</p>
+                <button onClick={async () => {
+                  if (loading || (credits !== null && credits < 3)) { setError(credits !== null && credits < 3 ? "Need 3 credits for key scenes." : ""); return; }
+                  setLoading(true); setError("");
+                  try {
+                    const r = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: topic.trim() || "Video Analysis", platform, tone, mode: "moments", transcript }) });
+                    const d = await r.json();
+                    if (!r.ok) { setError(d.error || "Failed"); setLoading(false); return; }
+                    const next: ResultSet = { id: Date.now(), topic: topic.trim() || "Video Analysis", platform, mode: "moments", moments: d.moments };
+                    setArchive(c => [next, ...c].slice(0, 15));
+                    setActiveId(next.id);
+                    if (d.credits !== undefined) setCredits(d.credits);
+                    showToast("Key scenes found!", "success");
+                  } catch { setError("Failed to find key scenes."); }
+                  finally { setLoading(false); }
+                }} disabled={loading}
+                  className="w-full rounded-full bg-[#d4af37] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#121214] hover:bg-[#f0d36b] disabled:opacity-40 transition">
+                  {loading ? "Analyzing..." : "Find Key Scenes (3 credits)"}
+                </button>
+              </div>
+            )}
 
             <div className="border border-[#d4af37]/24 bg-[#121214] p-6 shadow-[0_0_60px_rgba(212,175,55,0.08)] overflow-y-auto max-h-[750px]">
               <div className="mb-5 flex items-start justify-between gap-4 border-b border-white/10 pb-4">
