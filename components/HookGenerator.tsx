@@ -131,16 +131,28 @@ export default function HookGenerator() {
           <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[#d4af37]">Creator dashboard</p>
           <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Hooks, scripts, hashtags, thumbnails, series.</h2>
           <p className="mt-5 text-base leading-8 text-[#fdfbf7]/68">{user ? "Everything you need to post. Powered by Mistral AI." : "Guest mode. Sign in to save credits."}</p>
-          <div className="mt-6 flex items-center gap-4 flex-wrap">
-            <div className="inline-flex items-center gap-3 rounded-full border border-[#d4af37]/40 bg-[#d4af37]/8 px-5 py-3">
-              <span className="text-2xl font-bold text-[#d4af37]">{credits !== null ? credits : "..."}</span>
-              <span className="text-sm uppercase tracking-[0.2em] text-[#fdfbf7]/60">credits</span>
+          <div className="mt-8 flex items-stretch gap-4 flex-wrap">
+            <div className="relative overflow-hidden rounded-2xl border border-[#d4af37]/30 bg-gradient-to-br from-[#1a2332] to-[#0f151c] p-6 min-w-[180px] flex-1">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(212,175,55,0.08),transparent_60%)]" />
+              <p className="relative text-[10px] uppercase tracking-[0.25em] text-[#d4af37]/50 mb-3">Available Credits</p>
+              <div className="relative flex items-baseline gap-2">
+                <span className="text-5xl font-bold tracking-[-0.04em] text-[#d4af37]">{credits !== null ? credits : "..."}</span>
+                <span className="text-sm text-[#fdfbf7]/30 uppercase tracking-wider">{credits === 1 ? "credit" : "credits"}</span>
+              </div>
+              <div className="relative mt-3 h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                <div className="h-full rounded-full bg-gradient-to-r from-[#d4af37] to-[#f0d36b] transition-all duration-700" style={{ width: `${credits !== null ? Math.min(100, Math.max(0, (credits / 10) * 100)) : 0}%` }} />
+              </div>
             </div>
-            <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.02] px-5 py-3">
-              <span className="text-xl font-bold text-[#fdfbf7]/50">{archive.length - 1}</span>
-              <span className="text-sm uppercase tracking-[0.15em] text-[#fdfbf7]/35">generated</span>
+            <div className="rounded-2xl border border-white/10 bg-[#121214]/50 p-6 min-w-[140px] flex-1 flex flex-col justify-center items-center">
+              <span className="text-4xl font-bold text-[#fdfbf7]/40">{archive.length - 1}</span>
+              <span className="mt-1 text-[11px] uppercase tracking-[0.18em] text-[#fdfbf7]/25">generated</span>
             </div>
-            {credits !== null && credits < cost && <a href="#pricing" className="text-xs font-semibold uppercase tracking-[0.15em] text-[#d4af37] hover:text-[#f0d36b]">Buy credits ↓</a>}
+            {credits !== null && credits < cost && (
+              <a href="#pricing" className="rounded-2xl border border-[#d4af37]/30 bg-[#d4af37]/5 p-6 min-w-[140px] flex-1 flex flex-col justify-center items-center hover:bg-[#d4af37]/10 transition group">
+                <span className="text-2xl font-bold text-[#d4af37] group-hover:scale-110 transition">+</span>
+                <span className="mt-1 text-[11px] uppercase tracking-[0.18em] text-[#d4af37]/60">Buy more</span>
+              </a>
+            )}
           </div>
         </div>
 
