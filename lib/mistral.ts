@@ -134,3 +134,33 @@ function extract(c: string | { type: string; text?: string }[] | null | undefine
   if (typeof c === "string") return c;
   return c.map((x) => (x.type === "text" ? x.text : "")).join("");
 }
+
+export async function generateKeyMoments(input: GenInput, transcript: string): Promise<{
+  moments: { title: string; timestamp: string; hook: { text: string; score: number } }[];
+}> {
+  const sp = getSystemPrompt(input.tone);
+  const preview = transcript.slice(0, 4000);
+
+  const prompt = `Below is a video transcript. Identify 3-5 most important, viral-worthy key moments. For each moment write one scroll-stopping hook for ${input.platform}. Respond in the same language as the transcript.
+
+Transcript: "${preview}"
+
+Return JSON:
+{
+  "moments": [
+    {"title": "moment title", "timestamp": "rough timestamp", "hook": {"text": "viral hook for this moment max 25 words", "score": 85}},
+    ...
+  ]
+}`;
+
+  const res = await client.chat.complete({
+    model: "mistral-small-latest",
+    messages: [{ role: "system", content: sp }, { role: "user", content: prompt }],
+    temperature: 0.8, maxTokens: 1500, responseFormat: { type: "json_object" },
+  });
+
+  const raw = extract(res.choices?.[0]?.message?.content);
+  try { return JSON.parse(raw); } catch {
+    return { moments: [] };
+  }
+}
