@@ -12,7 +12,7 @@ const variants = [
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const idx = parseInt(searchParams.get("idx") ?? "0", 10);
-  const userId = request.headers.get("x-user-id") ?? "";
+  const userId = request.headers.get("x-user-id") || "";
   const base = appUrl || origin;
 
   if (!userId) {

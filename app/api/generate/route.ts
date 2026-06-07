@@ -5,7 +5,7 @@ import { getCredits, setCredits } from "@/lib/storage";
 const cooldowns = new Map<string, number>();
 
 export async function POST(request: Request) {
-  const userId = request.headers.get("x-user-id");
+  const userId = request.headers.get("x-user-id") || "";
   if (!userId) return NextResponse.json({ error: "Missing user identity" }, { status: 400 });
 
   const rateKey = `rate:${userId}`;
@@ -31,7 +31,8 @@ export async function POST(request: Request) {
 
   try {
     const inp = { topic: topic.trim(), platform, tone: tone as "cinematic" | "contrarian" | "urgent" };
-    let data: Record<string, unknown>;
+
+    let data: Record<string, unknown> = { hooks: [], title: topic.trim(), hashtags: [] };
 
     if (mode === "script") data = await generateScript(inp);
     else if (mode === "series") data = await generateSeries(inp);

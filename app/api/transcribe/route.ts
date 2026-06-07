@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const GROQ_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY ?? "";
+const GROQ_KEY = process.env.GROQ_API_KEY || process.env.NEXT_PUBLIC_GROQ_API_KEY || "";
 
 export async function POST(request: Request) {
   let body: { audio?: string; type?: string };
