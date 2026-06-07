@@ -42,8 +42,9 @@ export default function Navbar() {
         </div>
         <div className="flex items-center gap-3">
           {credits !== null && (
-            <span className="hidden rounded-full border border-[#d4af37]/30 bg-[#d4af37]/8 px-3 py-1 text-xs font-semibold text-[#d4af37] sm:inline">
-              {credits} credits
+            <span className="hidden items-center gap-2 rounded-full border border-[#d4af37]/30 bg-gradient-to-r from-[#d4af37]/10 to-[#d4af37]/5 px-4 py-1.5 sm:inline-flex shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37] shadow-[0_0_8px_rgba(212,175,55,0.7)] animate-pulse" />
+              <span className="text-xs font-bold text-[#d4af37] tracking-[0.1em]">{credits}</span>
             </span>
           )}
           {user ? (
