@@ -14,7 +14,7 @@ function getAdmin(): SupabaseClient | null {
   }
 
   try {
-    client = createClient(url, key, {
+    client = createClient(url.trim(), key.trim(), {
       auth: { autoRefreshToken: false, persistSession: false },
     });
     console.log("[admin] Supabase client created");
