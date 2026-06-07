@@ -20,14 +20,18 @@ export default function Hero() {
   const [stats, setStats] = useState({ visitors: 0, generated: 0, scenes: 0, active: 0 });
 
   useEffect(() => {
-    function fetchStats() {
-      fetch("/api/stats")
+    function fetchStats(first: boolean) {
+      const headers: Record<string, string> = {};
+      if (first) headers["x-first-visit"] = "1";
+      fetch("/api/stats", { headers })
         .then(r => r.json())
         .then(d => setStats(d))
         .catch(() => {});
     }
-    fetchStats();
-    const i = setInterval(fetchStats, 8000);
+    const firstVisit = !sessionStorage.getItem("hc_visited");
+    if (firstVisit) sessionStorage.setItem("hc_visited", "1");
+    fetchStats(firstVisit);
+    const i = setInterval(() => fetchStats(false), 8000);
     return () => clearInterval(i);
   }, []);
 
