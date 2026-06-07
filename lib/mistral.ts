@@ -14,7 +14,7 @@ export async function generateHooks(input: GenInput): Promise<{
 }> {
   const sp = getSystemPrompt(input.tone);
 
-  const prompt = `Write 3 scroll-stopping hooks for ${input.platform}: "${input.topic}".
+  const prompt = `Write 3 scroll-stopping hooks for ${input.platform}: "${input.topic}". Respond in the same language as the topic.
 
 Return JSON:
 {
@@ -86,7 +86,7 @@ export async function generateSeries(input: GenInput): Promise<{
 }> {
   const sp = getSystemPrompt(input.tone);
 
-  const prompt = `Write 10 scroll-stopping hooks for a ${input.platform} content SERIES about: "${input.topic}".
+  const prompt = `Write 10 scroll-stopping hooks for a ${input.platform} content SERIES about: "${input.topic}". Respond in the same language as the topic.
 
 Each hook should build on the previous or explore a new angle. Return JSON:
 {

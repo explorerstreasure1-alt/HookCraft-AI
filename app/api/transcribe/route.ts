@@ -18,7 +18,6 @@ export async function POST(request: Request) {
   formData.append("file", new Blob([blob], { type: mimeType }), body.type === "video" ? "video.mp4" : "audio.mp3");
   formData.append("model", "whisper-large-v3");
   formData.append("response_format", "json");
-  formData.append("language", "en");
 
   try {
     const res = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
