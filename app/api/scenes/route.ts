@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import { Mistral } from "@mistralai/mistralai";
 
-const client = new Mistral({ apiKey: process.env.MISTRAL_API_KEY ?? "" });
+const MISTRAL_KEY = process.env.MISTRAL_API_KEY;
 
 export async function POST(request: Request) {
+  if (!MISTRAL_KEY) {
+    return NextResponse.json({ error: "API key missing" }, { status: 500 });
+  }
+
   let body: { frames?: string[]; transcript?: string };
   try { body = await request.json(); } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
@@ -12,37 +15,35 @@ export async function POST(request: Request) {
   const { frames = [], transcript = "" } = body;
 
   if (frames.length === 0 && !transcript) {
-    return NextResponse.json({ error: "No frames or transcript provided" }, { status: 400 });
+    return NextResponse.json({ error: "No frames or transcript" }, { status: 400 });
   }
 
-  const parts: ({ type: "text"; text: string } | { type: "image_url"; imageUrl: string })[] = [
+  const parts: Record<string, unknown>[] = [
     {
       type: "text",
-      text: `Analyze these ${frames.length} video frames. Find visual scene boundaries (location change, new person, camera switch). Return JSON:
-{
-  "scenes": [
-    {"start": "MM:SS", "end": "MM:SS", "title": "scene name", "visual_clue": "what changed", "hook": {"text": "viral hook", "score": 85}}
-  ]
-}
-${transcript ? `Transcript context: "${transcript.slice(0, 1000)}"` : ""}`,
+      text: `Analyze these video frames. Find visual scene boundaries. Return JSON: {"scenes": [{"start": "MM:SS", "end": "MM:SS", "title": "scene", "visual_clue": "what changed", "hook": {"text": "viral hook", "score": 85}}]}${transcript ? " Context: " + transcript.slice(0, 500) : ""}`,
     },
   ];
 
-  for (const frame of frames.slice(0, 12)) {
+  for (const frame of frames.slice(0, 8)) {
     parts.push({ type: "image_url", imageUrl: frame });
   }
 
   try {
-    const response = await client.chat.complete({
-      model: "pixtral-12b-latest",
-      messages: [{ role: "user", content: parts }],
-      temperature: 0.5,
-      maxTokens: 2000,
-      responseFormat: { type: "json_object" },
+    const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${MISTRAL_KEY}` },
+      body: JSON.stringify({
+        model: "pixtral-12b-latest",
+        messages: [{ role: "user", content: parts }],
+        temperature: 0.5,
+        max_tokens: 2000,
+        response_format: { type: "json_object" },
+      }),
     });
 
-    const raw = response.choices?.[0]?.message?.content;
-    const text = typeof raw === "string" ? raw : Array.isArray(raw) ? raw.map(c => (c as { type: string; text?: string }).type === "text" ? (c as { text: string }).text : "").join("") : "";
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || "";
 
     try { return NextResponse.json(JSON.parse(text)); }
     catch { return NextResponse.json({ scenes: [] }); }

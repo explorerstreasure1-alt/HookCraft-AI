@@ -53,7 +53,7 @@ export default function Hero() {
           </div>
 
           <h1 className="max-w-4xl text-5xl font-semibold leading-[0.94] tracking-[-0.06em] text-[#fdfbf7] sm:text-7xl lg:text-8xl">
-            Your video&apos;s first 3 seconds, written by AI.
+            Your video's first 3 seconds, written by AI.
           </h1>
           <p className="mt-7 max-w-2xl text-base leading-8 text-[#fdfbf7]/74 sm:text-lg">
             Stop staring at a blank page. HookCraft AI generates scroll-stopping hooks and full scripts for TikTok, YouTube Shorts, Instagram Reels, and LinkedIn. Copy, paste, go viral.
