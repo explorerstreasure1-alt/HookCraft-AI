@@ -34,6 +34,70 @@ const trends: Record<string, string[]> = {
 
 const sample: ResultSet = { id: 101, topic: "AI side hustle myth", platform: "YouTube Shorts", mode: "hooks", hooks: [{ text: "Everyone sells the AI dream but nobody shows this part", score: 87 }], title: "The AI Side Hustle Myth", hashtags: ["#ai", "#truth"], thumbnail: "AI EXPOSED" };
 
+async function extractAudio(file: File): Promise<string> {
+  const audioCtx = new AudioContext({ sampleRate: 16000 });
+  const arrayBuffer = await file.arrayBuffer();
+  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
+
+  const duration = Math.min(audioBuffer.duration, 59);
+  const sampleCount = Math.floor(duration * 16000);
+  const offlineCtx = new OfflineAudioContext(1, sampleCount, 16000);
+  const source = offlineCtx.createBufferSource();
+  source.buffer = audioBuffer;
+  source.connect(offlineCtx.destination);
+  source.start(0, 0, duration);
+
+  const rendered = await offlineCtx.startRendering();
+  audioCtx.close();
+
+  const wav = encodeWAV(rendered);
+  const bytes = new Uint8Array(wav);
+  let binary = "";
+  for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+function encodeWAV(buffer: AudioBuffer): ArrayBuffer {
+  const numChannels = 1;
+  const sampleRate = buffer.sampleRate;
+  const format = 1;
+  const bitsPerSample = 16;
+  const data = buffer.getChannelData(0);
+  const byteRate = sampleRate * numChannels * bitsPerSample / 8;
+  const blockAlign = numChannels * bitsPerSample / 8;
+  const dataSize = data.length * (bitsPerSample / 8);
+  const headerSize = 44;
+  const totalSize = headerSize + dataSize;
+  const wav = new ArrayBuffer(totalSize);
+  const view = new DataView(wav);
+
+  writeString(view, 0, "RIFF");
+  view.setUint32(4, totalSize - 8, true);
+  writeString(view, 8, "WAVE");
+  writeString(view, 12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, format, true);
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, bitsPerSample, true);
+  writeString(view, 36, "data");
+  view.setUint32(40, dataSize, true);
+
+  let offset = 44;
+  for (let i = 0; i < data.length; i++) {
+    const sample = Math.max(-1, Math.min(1, data[i]));
+    view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+    offset += 2;
+  }
+  return wav;
+}
+
+function writeString(view: DataView, offset: number, str: string) {
+  for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+}
+
 export default function HookGenerator() {
   const { user } = useAuth();
   const [topic, setTopic] = useState("");
@@ -107,6 +171,23 @@ export default function HookGenerator() {
     if (!isImage && !isVideo && !isAudio) return;
 
     setAnalyzing(true);
+
+    if (isVideo) {
+      try {
+        const audioBase64 = await extractAudio(file);
+        const r = await fetch("/api/transcribe", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ audio: audioBase64, type: "audio" }),
+        });
+        const d = await r.json();
+        if (d.topic) { setTopic(d.topic); showToast("Speech transcribed!", "success"); }
+        else if (d.text) { setTopic(`Video about: ${d.text.slice(0, 200)}`); showToast("Transcribed!", "success"); }
+        else { setError("No speech detected in video."); }
+      } catch { setError("Video analysis failed."); }
+      finally { setAnalyzing(false); }
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = async () => {
       try {
@@ -117,15 +198,15 @@ export default function HookGenerator() {
           });
           const d = await r.json();
           if (d.topic) { setTopic(d.topic); showToast("Screenshot analyzed!", "success"); }
-        } else {
+        } else if (isAudio) {
           const base64 = (reader.result as string).split(",")[1];
           const r = await fetch("/api/transcribe", {
             method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ audio: base64, type: isVideo ? "video" : "audio" }),
+            body: JSON.stringify({ audio: base64, type: "audio" }),
           });
           const d = await r.json();
-          if (d.topic) { setTopic(d.topic); showToast("Speech transcribed! Topic filled.", "success"); }
-          else if (d.text) { setTopic(`Video about: ${d.text.slice(0, 200)}`); showToast("Transcribed!", "success"); }
+          if (d.topic) { setTopic(d.topic); showToast("Audio transcribed!", "success"); }
+          else if (d.text) { setTopic(`Audio about: ${d.text.slice(0, 200)}`); showToast("Transcribed!", "success"); }
         }
       } catch { setError("Analysis failed."); }
       finally { setAnalyzing(false); }
