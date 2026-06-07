@@ -10,7 +10,6 @@ type ResultSet = {
   id: number; topic: string; platform: string; mode: string;
   hooks?: HookItem[]; title?: string; hashtags?: string[]; thumbnail?: string;
   hook?: HookItem; body?: string; cta?: string; description?: string; sound?: string;
-  moments?: { title: string; timestamp: string; hook: HookItem }[];
 };
 
 const platforms = ["TikTok", "YouTube Shorts", "Instagram Reels", "LinkedIn Video"];
@@ -113,7 +112,6 @@ export default function HookGenerator() {
   const [error, setError] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [dragOver, setDragOver] = useState(false);
-  const [transcript, setTranscript] = useState("");
   const prevCredits = useRef<number | null>(null);
 
   const activeSet = useMemo(() => archive.find(i => i.id === activeId) ?? archive[0], [activeId, archive]);
@@ -147,14 +145,13 @@ export default function HookGenerator() {
     if (credits !== null && credits < cost) { setError(`Need ${cost} credits. You have ${credits}.`); return; }
     setError(""); setLoading(true);
     try {
-      const r = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: topic.trim(), platform, tone, mode, transcript }) });
+      const r = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: topic.trim(), platform, tone, mode }) });
       const d = await r.json();
       if (!r.ok) { setError(d.error || "Failed."); setLoading(false); return; }
       const next: ResultSet = {
-        id: Date.now(), topic: topic.trim() || "Video Analysis", platform, mode: d.mode,
+        id: Date.now(), topic: topic.trim(), platform, mode: d.mode,
         hooks: d.hooks, title: d.title, hashtags: d.hashtags, thumbnail: d.thumbnail,
         hook: d.hook, body: d.body, cta: d.cta, description: d.description, sound: d.sound,
-        moments: d.moments,
       };
       setArchive(c => [next, ...c].slice(0, 15));
       setActiveId(next.id);
@@ -168,54 +165,21 @@ export default function HookGenerator() {
   }
 
   async function handleFile(file: File) {
-    const isImage = file.type.startsWith("image/");
-    const isVideo = file.type.startsWith("video/");
-    const isAudio = file.type.startsWith("audio/");
-    if (!isImage && !isVideo && !isAudio) return;
-
+    if (!file.type.startsWith("image/")) return;
     setAnalyzing(true);
-
-    if (isVideo) {
-      try {
-        const audioBase64 = await extractAudio(file);
-        const r = await fetch("/api/transcribe", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ audio: audioBase64, type: "audio" }),
-        });
-        const d = await r.json();
-        if (d.topic) { setTopic(d.topic); setTranscript(d.text || ""); showToast("Speech transcribed! Topic filled.", "success"); }
-        else if (d.text) { setTopic(`Video content`); setTranscript(d.text); showToast("Transcribed!", "success"); }
-        else { setError("No speech detected."); }
-      } catch { setError("Video analysis failed."); }
-      finally { setAnalyzing(false); }
-      return;
-    }
-
     const reader = new FileReader();
     reader.onload = async () => {
       try {
-        if (isImage) {
-          const r = await fetch("/api/analyze", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ image: reader.result as string }),
-          });
-          const d = await r.json();
-          if (d.topic) { setTopic(d.topic); showToast("Screenshot analyzed!", "success"); }
-        } else if (isAudio) {
-          const base64 = (reader.result as string).split(",")[1];
-          const r = await fetch("/api/transcribe", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ audio: base64, type: "audio" }),
-          });
-          const d = await r.json();
-          if (d.topic) { setTopic(d.topic); showToast("Audio transcribed!", "success"); }
-          else if (d.text) { setTopic(`Audio about: ${d.text.slice(0, 200)}`); showToast("Transcribed!", "success"); }
-        }
+        const r = await fetch("/api/analyze", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: reader.result as string }),
+        });
+        const d = await r.json();
+        if (d.topic) { setTopic(d.topic); showToast("Screenshot analyzed!", "success"); }
       } catch { setError("Analysis failed."); }
       finally { setAnalyzing(false); }
     };
-    if (isImage) reader.readAsDataURL(file);
-    else reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
   }
 
   function handleDrop(e: React.DragEvent) {
@@ -343,9 +307,9 @@ export default function HookGenerator() {
                   <p className="text-sm text-[#d4af37] animate-pulse">Analyzing image...</p>
                 ) : (
                   <label className="cursor-pointer block">
-                    <p className="text-sm text-[#fdfbf7]/35">Drop screenshot, video or audio (up to 5 min)</p>
-                    <p className="text-[10px] text-[#fdfbf7]/18 mt-1">AI reads images & transcribes speech</p>
-                    <input type="file" accept="image/*,video/*,audio/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+                    <p className="text-sm text-[#fdfbf7]/35">Drop a screenshot to fill topic</p>
+                    <p className="text-[10px] text-[#fdfbf7]/18 mt-1">AI reads text from images</p>
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
                   </label>
                 )}
               </div>
@@ -373,37 +337,6 @@ export default function HookGenerator() {
               </button>
             </div>
 
-            {transcript && (
-              <div className="border border-[#d4af37]/20 bg-gradient-to-r from-[#1a2332]/80 to-[#121214] p-6 rounded-2xl">
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-2xl">🎬</span>
-                  <div>
-                    <p className="text-sm font-semibold text-[#fdfbf7]">Video transcript ready</p>
-                    <p className="text-[10px] text-[#fdfbf7]/30">Find the most viral-worthy scenes automatically</p>
-                  </div>
-                </div>
-                <p className="text-xs text-[#fdfbf7]/40 line-clamp-2 mb-4">{transcript}</p>
-                <button onClick={async () => {
-                  if (loading || (credits !== null && credits < 3)) { setError(credits !== null && credits < 3 ? "Need 3 credits for key scenes." : ""); return; }
-                  setLoading(true); setError("");
-                  try {
-                    const r = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: topic.trim() || "Video Analysis", platform, tone, mode: "moments", transcript }) });
-                    const d = await r.json();
-                    if (!r.ok) { setError(d.error || "Failed"); setLoading(false); return; }
-                    const next: ResultSet = { id: Date.now(), topic: topic.trim() || "Video Analysis", platform, mode: "moments", moments: d.moments };
-                    setArchive(c => [next, ...c].slice(0, 15));
-                    setActiveId(next.id);
-                    if (d.credits !== undefined) setCredits(d.credits);
-                    showToast("Key scenes found!", "success");
-                  } catch { setError("Failed to find key scenes."); }
-                  finally { setLoading(false); }
-                }} disabled={loading}
-                  className="w-full rounded-full bg-[#d4af37] px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#121214] hover:bg-[#f0d36b] disabled:opacity-40 transition">
-                  {loading ? "Analyzing..." : "Find Key Scenes (3 credits)"}
-                </button>
-              </div>
-            )}
-
             <div className="border border-[#d4af37]/24 bg-[#121214] p-6 shadow-[0_0_60px_rgba(212,175,55,0.08)] overflow-y-auto max-h-[750px]">
               <div className="mb-5 flex items-start justify-between gap-4 border-b border-white/10 pb-4">
                 <div><p className="text-xs uppercase tracking-[0.22em] text-[#d4af37]">Output</p><h3 className="mt-2 text-lg font-semibold tracking-[-0.03em] line-clamp-2">{activeSet.topic}</h3></div>
@@ -426,23 +359,7 @@ export default function HookGenerator() {
                 </div>
               )}
 
-              {activeSet.mode === "moments" && activeSet.moments ? (
-                <div className="space-y-5">
-                  {activeSet.moments.map((m, i) => (
-                    <div key={i} className="border border-[#d4af37]/30 bg-[#1a2332]/40 p-4 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]">{m.title}</p>
-                          <p className="text-[10px] text-[#fdfbf7]/25 mt-0.5">{m.timestamp}</p>
-                        </div>
-                        <span className="text-sm font-bold text-[#d4af37]">{m.hook.score}</span>
-                      </div>
-                      <p className="text-base leading-7 text-[#fdfbf7]/86">{m.hook.text}</p>
-                      <button onClick={() => copyText(m.hook.text)} className="mt-2 text-[10px] uppercase tracking-[0.2em] text-[#d4af37]/60 hover:text-[#f0d36b]">{copied === m.hook.text ? "Copied" : "Copy"}</button>
-                    </div>
-                  ))}
-                </div>
-              ) : activeSet.mode === "script" && activeSet.hook ? (
+              {activeSet.mode === "script" && activeSet.hook ? (
                 <div className="space-y-4">
                   <Block label="Hook" text={activeSet.hook.text} score={activeSet.hook.score} copied={copied} onCopy={copyText} hl />
                   {activeSet.body && <Block label="Body" text={activeSet.body} copied={copied} onCopy={copyText} />}

@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Architecture from "@/components/Architecture";
 import HookGenerator from "@/components/HookGenerator";
+import KeyScenes from "@/components/KeyScenes";
 import Pricing from "@/components/Pricing";
 import ProductionLogic from "@/components/ProductionLogic";
 import Footer from "@/components/Footer";
@@ -14,6 +15,7 @@ export default function Page() {
       <Hero />
       <Architecture />
       <HookGenerator />
+      <KeyScenes />
       <Pricing />
       <ProductionLogic />
       <Footer />
