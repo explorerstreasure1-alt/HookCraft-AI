@@ -1,32 +1,41 @@
 import { getAdmin } from "@/lib/supabase/admin";
 
-const localStore = new Map<string, number>();
-
 export async function getCredits(userId: string): Promise<number> {
   const admin = getAdmin();
-  if (!admin) return localStore.get(userId) ?? 3;
-
-  try {
-    const { data } = await admin
-      .from("users")
-      .select("credits")
-      .eq("id", userId)
-      .single();
-    if (data) return data.credits;
-    await admin.from("users").insert({ id: userId, credits: 3 });
+  if (!admin) {
+    console.log("[storage] no admin client, returning default 3");
     return 3;
-  } catch {
-    return localStore.get(userId) ?? 3;
   }
+
+  const { data, error } = await admin
+    .from("users")
+    .select("credits")
+    .eq("id", userId)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") {
+      await admin.from("users").insert({ id: userId, credits: 3 });
+      return 3;
+    }
+    console.error("[storage] getCredits error:", error.message);
+    throw error;
+  }
+
+  return data?.credits ?? 3;
 }
 
 export async function setCredits(userId: string, amount: number): Promise<void> {
   const admin = getAdmin();
-  if (!admin) { localStore.set(userId, amount); return; }
-  try {
-    await admin.from("users").upsert({ id: userId, credits: amount });
-  } catch {
-    localStore.set(userId, amount);
+  if (!admin) throw new Error("Supabase admin client not available");
+
+  const { error } = await admin
+    .from("users")
+    .upsert({ id: userId, credits: amount });
+
+  if (error) {
+    console.error("[storage] setCredits error:", error.message);
+    throw error;
   }
 }
 

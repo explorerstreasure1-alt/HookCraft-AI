@@ -51,7 +51,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid tone" }, { status: 400 });
   }
 
-  const credits = await getCredits(userId);
+  let credits = 3;
+  try {
+    credits = await getCredits(userId);
+  } catch (err) {
+    console.error("[generate] getCredits error:", err);
+  }
 
   if (credits <= 0) {
     return NextResponse.json({ error: "No credits remaining. Buy a pack below." }, { status: 402 });
