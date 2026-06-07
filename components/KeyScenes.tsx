@@ -235,7 +235,7 @@ export default function KeyScenes() {
               onDrop={e => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
               className={`mt-3 border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition ${dragOver ? "border-[#d4af37] bg-[#d4af37]/5" : "border-white/10 hover:border-white/20"}`}
             >
-              {analyzing ? <p className="text-sm text-[#d4af37] animate-pulse">&#x1F3AC; Analyzing video...</p> : (
+              {analyzing ? <p className="text-sm text-[#d4af37] animate-pulse">{'\uD83C\uDFAC'} Analyzing video...</p> : (
                 <label className="cursor-pointer block">
                   <p className="text-sm text-[#fdfbf7]/35">Drop video here</p>
                   <input type="file" accept="video/*,audio/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
@@ -295,7 +295,7 @@ export default function KeyScenes() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full min-h-[200px]">
-                <p className="text-4xl mb-4">&#x1F3AC;</p>
+                <p className="text-4xl mb-4">{'\uD83C\uDFAC'}</p>
                 <p className="text-sm text-[#fdfbf7]/30">Drop a video to detect scenes</p>
               </div>
             )}
