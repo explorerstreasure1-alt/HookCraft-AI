@@ -7,11 +7,26 @@ export default function Navbar() {
   const { user, signOut } = useAuth();
   const [credits, setCredits] = useState<number | null>(null);
 
-  useEffect(() => {
+  function fetchCredits() {
     fetch("/api/credits")
       .then((r) => r.json())
       .then((d: { credits: number }) => setCredits(d.credits))
       .catch(() => {});
+  }
+
+  useEffect(() => {
+    fetchCredits();
+    const i = setInterval(fetchCredits, 30000);
+    function onVisible() {
+      if (document.visibilityState === "visible") fetchCredits();
+    }
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("credits-updated", fetchCredits);
+    return () => {
+      clearInterval(i);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("credits-updated", fetchCredits);
+    };
   }, [user]);
 
   return (

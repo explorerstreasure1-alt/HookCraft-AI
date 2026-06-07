@@ -65,6 +65,7 @@ export default function HookGenerator() {
           }
           setCredits(data.credits);
           prevCredits.current = data.credits;
+          window.dispatchEvent(new CustomEvent("credits-updated", { detail: data.credits }));
         }
       })
       .catch(() => setCredits(3));
