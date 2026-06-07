@@ -10,19 +10,21 @@ interface GenerateInput {
   tone: "cinematic" | "contrarian" | "urgent";
 }
 
-export async function generateHooks(input: GenerateInput): Promise<string[]> {
+export async function generateHooks(input: GenerateInput): Promise<{
+  hooks: string[];
+  title: string;
+  hashtags: string[];
+}> {
   const systemPrompt = getSystemPrompt(input.tone);
 
-  const userPrompt = `Write exactly 3 scroll-stopping video hooks for an ${input.platform} video about: "${input.topic}".
+  const userPrompt = `Write 3 scroll-stopping video hooks for an ${input.platform} video about: "${input.topic}".
 
-Rules:
-- Each hook must be a single sentence (max 25 words).
-- Every hook must be different from the others in angle or emotion.
-- Do NOT use hashtags, emojis, or quotation marks around the hooks.
-- Start each hook on a new line with just a number and dot (1. 2. 3.).
-- Hooks must feel native to ${input.platform}.
-
-Return ONLY the 3 numbered hooks, nothing else.`;
+Return this exact JSON (no markdown):
+{
+  "hooks": ["hook one max 25 words", "hook two max 25 words", "hook three max 25 words"],
+  "title": "one catchy video title max 10 words",
+  "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5"]
+}`;
 
   const response = await client.chat.complete({
     model: "mistral-small-latest",
@@ -31,23 +33,45 @@ Return ONLY the 3 numbered hooks, nothing else.`;
       { role: "user", content: userPrompt },
     ],
     temperature: 0.9,
-    maxTokens: 300,
+    maxTokens: 500,
+    responseFormat: { type: "json_object" },
   });
 
   const raw = extractContent(response.choices?.[0]?.message?.content);
-  return parseLines(raw, 3);
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const lines = parseLines(raw, 10);
+    return {
+      hooks: lines.slice(0, 3),
+      title: input.topic,
+      hashtags: ["#fyp", "#viral", "#content", "#creator", `#${input.platform.toLowerCase().replace(/\s/g, "")}`],
+    };
+  }
 }
 
-export async function generateScript(input: GenerateInput): Promise<{ hook: string; body: string; cta: string }> {
+export async function generateScript(input: GenerateInput): Promise<{
+  hook: string;
+  body: string;
+  cta: string;
+  title: string;
+  hashtags: string[];
+  description: string;
+  sound: string;
+}> {
   const toneGuide = getToneGuide(input.tone);
 
-  const userPrompt = `Write a complete ${input.platform} video script about: "${input.topic}".
+  const userPrompt = `Write a complete ${input.platform} video package about: "${input.topic}".
 
-Return exactly this JSON structure (no markdown, no explanation):
+Return this exact JSON (no markdown, no explanation):
 {
-  "hook": "one gripping first sentence (max 20 words)",
-  "body": "the main content script (4-6 sentences, ~100 words). ${toneGuide}",
-  "cta": "one strong call to action (max 15 words)"
+  "hook": "one gripping first sentence max 20 words",
+  "title": "catchy video title max 10 words",
+  "body": "main content script 4-6 sentences ~100 words. ${toneGuide}",
+  "cta": "one strong call to action max 15 words",
+  "description": "YouTube/Reels description 2-3 lines with emojis",
+  "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5", "#tag6", "#tag7"],
+  "sound": "suggest a trending ${input.platform} sound or music vibe that fits this content e.g. 'upbeat lo-fi' or specific sound name"
 }`;
 
   const response = await client.chat.complete({
@@ -57,24 +81,22 @@ Return exactly this JSON structure (no markdown, no explanation):
       { role: "user", content: userPrompt },
     ],
     temperature: 0.8,
-    maxTokens: 500,
+    maxTokens: 800,
     responseFormat: { type: "json_object" },
   });
 
   const raw = extractContent(response.choices?.[0]?.message?.content);
   try {
-    const parsed = JSON.parse(raw);
-    return {
-      hook: parsed.hook || "Ready to transform your content?",
-      body: parsed.body || "Create engaging content that resonates with your audience.",
-      cta: parsed.cta || "Follow for more tips.",
-    };
+    return JSON.parse(raw);
   } catch {
-    const lines = raw.split("\n").filter((l) => l.trim());
     return {
-      hook: lines[0] || "Here is something you need to hear.",
-      body: lines.slice(1, -1).join(" ") || "The key insight that changes everything.",
-      cta: lines[lines.length - 1] || "Follow for more.",
+      hook: "Ready to transform your content?",
+      body: "Create engaging content that resonates with your audience. Stay consistent and authentic.",
+      cta: "Follow for more insights.",
+      title: input.topic,
+      hashtags: ["#fyp", "#viral", "#content"],
+      description: "Watch this video to learn more about " + input.topic,
+      sound: "original sound - trending beat",
     };
   }
 }
@@ -82,11 +104,11 @@ Return exactly this JSON structure (no markdown, no explanation):
 function getSystemPrompt(tone: string): string {
   const prompts: Record<string, string> = {
     cinematic:
-      "You are a cinematic video script writer. Generate hooks that create mystery, tension, and visual curiosity. Use sensory language, pause-worthy phrasing, and story-driven intrigue.",
+      "You are a viral video script writer. Create cinematic, curiosity-driven hooks, titles, hashtags, and descriptions that maximize watch time and engagement on short-form platforms.",
     contrarian:
-      "You are a contrarian content strategist. Generate hooks that challenge conventional wisdom, flip expectations, and make the viewer question what they know. Be bold and provocative.",
+      "You are a contrarian content strategist. Create bold, opinion-flipping hooks, titles, hashtags, and descriptions that spark debate and comments.",
     urgent:
-      "You are an urgency-driven copywriter. Generate hooks that create FOMO, time pressure, and immediate action. Make the viewer feel they will lose something if they scroll past.",
+      "You are an urgency-driven copywriter. Create FOMO-inducing hooks, titles, hashtags, and descriptions that demand immediate attention.",
   };
   return prompts[tone] ?? prompts.cinematic;
 }
@@ -109,8 +131,7 @@ function extractContent(content: string | { type: string; text?: string }[] | nu
 function parseLines(text: string, max: number): string[] {
   return text
     .split("\n")
-    .map((line) => line.replace(/^\d+\.\s*/, "").trim())
-    .filter((line) => line.length > 10)
+    .map((line) => line.replace(/^\d+\.\s*/, "").replace(/^[-*]\s*/, "").trim())
+    .filter((line) => line.length > 5)
     .slice(0, max);
 }
-
