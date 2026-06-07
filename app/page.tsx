@@ -5,6 +5,7 @@ import HookGenerator from "@/components/HookGenerator";
 import Pricing from "@/components/Pricing";
 import ProductionLogic from "@/components/ProductionLogic";
 import Footer from "@/components/Footer";
+import { ToastContainer } from "@/components/Toast";
 
 export default function Page() {
   return (
@@ -16,6 +17,7 @@ export default function Page() {
       <Pricing />
       <ProductionLogic />
       <Footer />
+      <ToastContainer />
     </main>
   );
 }

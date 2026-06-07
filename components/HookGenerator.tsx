@@ -1,7 +1,8 @@
 "use client";
 
 import { useAuth } from "@/lib/supabase/auth-context";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { showToast } from "./Toast";
 
 type HookSet = {
   id: number;
@@ -46,20 +47,57 @@ export default function HookGenerator() {
   const [copiedHook, setCopiedHook] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const prevCredits = useRef<number | null>(null);
 
   const activeSet = useMemo(
     () => archive.find((item) => item.id === activeId) ?? archive[0],
     [activeId, archive]
   );
 
-  useEffect(() => {
+  function fetchCredits() {
     fetch("/api/credits")
       .then((res) => res.json())
       .then((data: { credits: number }) => {
         if (data.credits !== undefined) setCredits(data.credits);
       })
       .catch(() => setCredits(3));
+  }
+
+  useEffect(() => {
+    fetchCredits();
+
+    const params = new URLSearchParams(location.search);
+    if (params.get("checkout") === "success") {
+      setTimeout(() => {
+        fetch("/api/credits")
+          .then((r) => r.json())
+          .then((d: { credits: number }) => {
+            if (d.credits !== undefined) {
+              setCredits(d.credits);
+              showToast(`Credits added! You have ${d.credits} credits.`, "success");
+            }
+          });
+      }, 3000);
+      const url = new URL(location.href);
+      url.searchParams.delete("checkout");
+      history.replaceState(null, "", url.toString());
+    }
+
+    function onVisible() {
+      if (document.visibilityState === "visible") fetchCredits();
+    }
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, []);
+
+  useEffect(() => {
+    if (prevCredits.current !== null && credits !== null && credits < prevCredits.current) {
+      if (credits === 0) {
+        showToast("Credits depleted. Buy a pack to continue.", "info");
+      }
+    }
+    prevCredits.current = credits;
+  }, [credits]);
 
   async function handleGenerate() {
     if (loading) return;
@@ -128,10 +166,10 @@ export default function HookGenerator() {
           </h2>
           <p className="mt-5 text-base leading-8 text-[#fdfbf7]/68">
             {user
-              ? "Powered by Mistral AI. Enter your video topic, pick a tone, and get 3 scroll-stopping hooks. Your credits are saved to your account."
-              : "You are using a guest session. Sign in to save your credits across devices."}
+              ? "Powered by Mistral AI. Your credits are saved to your account."
+              : "Guest mode. Sign in to save credits across devices."}
           </p>
-          <div className="mt-6 flex items-center gap-4">
+          <div className="mt-6 flex items-center gap-4 flex-wrap">
             <div className="inline-flex items-center gap-3 rounded-full border border-[#d4af37]/40 bg-[#d4af37]/8 px-5 py-3">
               <span className="text-2xl font-bold text-[#d4af37]">
                 {credits !== null ? credits : "..."}
@@ -150,15 +188,8 @@ export default function HookGenerator() {
 
         {!user && (
           <div className="mt-8 border border-[#d4af37]/30 bg-[#1a2332]/50 p-5 rounded-lg flex items-center justify-between gap-4 flex-col sm:flex-row">
-            <p className="text-sm text-[#fdfbf7]/70">
-              Guest mode: credits are tied to this browser. Sign in for cross-device access.
-            </p>
-            <a
-              href="/auth"
-              className="shrink-0 rounded-full bg-[#d4af37] px-5 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#121214] transition hover:bg-[#f0d36b]"
-            >
-              Sign In Free
-            </a>
+            <p className="text-sm text-[#fdfbf7]/70">Guest mode: credits stay on this browser. Sign in for cross-device access.</p>
+            <a href="/auth" className="shrink-0 rounded-full bg-[#d4af37] px-5 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#121214] transition hover:bg-[#f0d36b]">Sign In Free</a>
           </div>
         )}
 
@@ -169,9 +200,6 @@ export default function HookGenerator() {
                 <p className="text-xs uppercase tracking-[0.24em] text-[#fdfbf7]/48">Archive</p>
                 <p className="mt-1 text-lg font-semibold text-[#fdfbf7]">Matryoshka sessions</p>
               </div>
-              <span className="rounded-full bg-[#d4af37]/12 px-3 py-1 text-xs font-semibold text-[#d4af37]">
-                {credits !== null ? `${credits} credits` : "..."}
-              </span>
             </div>
             <div className="mt-5 space-y-3">
               {archive.map((item, index) => (
@@ -184,14 +212,9 @@ export default function HookGenerator() {
                       ? "border-[#d4af37] bg-[#1a2332] text-[#fdfbf7]"
                       : "border-white/10 text-[#fdfbf7]/58 hover:border-[#d4af37]/60 hover:bg-white/[0.03]"
                   }`}
-                  style={{
-                    marginLeft: `${Math.min(index, 3) * 10}px`,
-                    width: `calc(100% - ${Math.min(index, 3) * 10}px)`,
-                  }}
+                  style={{ marginLeft: `${Math.min(index, 3) * 10}px`, width: `calc(100% - ${Math.min(index, 3) * 10}px)` }}
                 >
-                  <span className="block text-xs uppercase tracking-[0.2em] text-[#d4af37]/80">
-                    {item.platform}
-                  </span>
+                  <span className="block text-xs uppercase tracking-[0.2em] text-[#d4af37]/80">{item.platform}</span>
                   <span className="mt-1 block font-medium">{item.topic}</span>
                 </button>
               ))}
@@ -200,9 +223,7 @@ export default function HookGenerator() {
 
           <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
             <div className="border border-white/10 bg-[#1a2332]/82 p-6">
-              <label className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d4af37]" htmlFor="topic">
-                Video topic
-              </label>
+              <label className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d4af37]" htmlFor="topic">Video topic</label>
               <textarea
                 id="topic"
                 value={topic}
@@ -210,44 +231,23 @@ export default function HookGenerator() {
                 className="mt-4 min-h-32 w-full resize-none border border-white/10 bg-[#121214] p-4 text-base leading-7 text-[#fdfbf7] outline-none transition placeholder:text-[#fdfbf7]/30 focus:border-[#d4af37]/70"
                 placeholder="Describe the creator angle, offer, or story tension..."
               />
-
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="text-xs uppercase tracking-[0.2em] text-[#fdfbf7]/50" htmlFor="platform">
-                    Platform
-                  </label>
-                  <select
-                    id="platform"
-                    value={platform}
-                    onChange={(event) => setPlatform(event.target.value)}
-                    className="mt-3 w-full border border-white/10 bg-[#121214] px-4 py-3 text-sm text-[#fdfbf7] outline-none focus:border-[#d4af37]/70"
-                  >
-                    {platforms.map((item) => (
-                      <option key={item}>{item}</option>
-                    ))}
+                  <label className="text-xs uppercase tracking-[0.2em] text-[#fdfbf7]/50" htmlFor="platform">Platform</label>
+                  <select id="platform" value={platform} onChange={(e) => setPlatform(e.target.value)} className="mt-3 w-full border border-white/10 bg-[#121214] px-4 py-3 text-sm text-[#fdfbf7] outline-none focus:border-[#d4af37]/70">
+                    {platforms.map((item) => (<option key={item}>{item}</option>))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs uppercase tracking-[0.2em] text-[#fdfbf7]/50" htmlFor="tone">
-                    Hook tone
-                  </label>
-                  <select
-                    id="tone"
-                    value={tone}
-                    onChange={(event) => setTone(event.target.value)}
-                    className="mt-3 w-full border border-white/10 bg-[#121214] px-4 py-3 text-sm text-[#fdfbf7] outline-none focus:border-[#d4af37]/70"
-                  >
+                  <label className="text-xs uppercase tracking-[0.2em] text-[#fdfbf7]/50" htmlFor="tone">Hook tone</label>
+                  <select id="tone" value={tone} onChange={(e) => setTone(e.target.value)} className="mt-3 w-full border border-white/10 bg-[#121214] px-4 py-3 text-sm text-[#fdfbf7] outline-none focus:border-[#d4af37]/70">
                     <option value="cinematic">Cinematic tension</option>
                     <option value="contrarian">Contrarian</option>
                     <option value="urgent">Urgent swipe-stopper</option>
                   </select>
                 </div>
               </div>
-
-              {error && (
-                <p className="mt-4 text-sm text-red-400">{error}</p>
-              )}
-
+              {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
               <button
                 type="button"
                 onClick={handleGenerate}
@@ -264,25 +264,16 @@ export default function HookGenerator() {
                   <p className="text-xs uppercase tracking-[0.22em] text-[#d4af37]">AI output</p>
                   <h3 className="mt-2 text-2xl font-semibold tracking-[-0.03em]">{activeSet.topic}</h3>
                 </div>
-                <span className="shrink-0 border border-white/10 px-3 py-2 text-xs text-[#fdfbf7]/58">
-                  {activeSet.platform}
-                </span>
+                <span className="shrink-0 border border-white/10 px-3 py-2 text-xs text-[#fdfbf7]/58">{activeSet.platform}</span>
               </div>
               <div className="space-y-4">
                 {activeSet.hooks.map((hook, index) => (
-                  <div
-                    key={hook}
-                    className="group border border-white/10 bg-[#1a2332]/58 p-4 transition hover:border-[#d4af37]/55"
-                  >
+                  <div key={hook} className="group border border-white/10 bg-[#1a2332]/58 p-4 transition hover:border-[#d4af37]/55">
                     <div className="flex items-start gap-4">
                       <span className="font-mono text-sm text-[#d4af37]">0{index + 1}</span>
                       <p className="flex-1 text-lg leading-7 text-[#fdfbf7]/86">{hook}</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => copyHook(hook)}
-                      className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#d4af37] transition group-hover:text-[#f0d36b]"
-                    >
+                    <button type="button" onClick={() => copyHook(hook)} className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#d4af37] transition group-hover:text-[#f0d36b]">
                       {copiedHook === hook ? "Copied" : "Copy hook"}
                     </button>
                   </div>
