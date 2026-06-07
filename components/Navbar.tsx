@@ -35,7 +35,7 @@ export default function Navbar() {
         <a href="#hero" className="flex items-center gap-2 group">
           <span className="text-xl font-bold tracking-[-0.04em] text-[#d4af37]">&#9851;</span>
           <span className="text-sm font-semibold uppercase tracking-[0.28em] text-[#fdfbf7]">HookCraft</span>
-          <span className="text-[10px] font-bold text-[#d4af37] bg-[#d4af37]/10 px-1.5 py-0.5 rounded">.AI</span>
+          <span className="text-[10px] font-bold text-[#d4af37] bg-[#d4af37]/10 px-1.5 py-0.5 rounded">AI.</span>
         </a>
         <div className="hidden items-center gap-7 text-xs uppercase tracking-[0.22em] text-[#fdfbf7]/62 md:flex">
           <a className="transition hover:text-[#d4af37]" href="#architecture">Architecture</a>
