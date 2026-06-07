@@ -101,23 +101,37 @@ export default function HookGenerator() {
   }
 
   async function handleFile(file: File) {
-    if (!file.type.startsWith("image/")) return;
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+    const isAudio = file.type.startsWith("audio/");
+    if (!isImage && !isVideo && !isAudio) return;
+
     setAnalyzing(true);
     const reader = new FileReader();
     reader.onload = async () => {
       try {
-        const r = await fetch("/api/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: reader.result }),
-        });
-        const d = await r.json();
-        if (d.topic) { setTopic(d.topic); showToast("Image analyzed! Topic filled.", "success"); }
-        if (d.summary) setTopic(d.topic || d.summary);
-      } catch { setError("Image analysis failed."); }
+        if (isImage) {
+          const r = await fetch("/api/analyze", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ image: reader.result as string }),
+          });
+          const d = await r.json();
+          if (d.topic) { setTopic(d.topic); showToast("Screenshot analyzed!", "success"); }
+        } else {
+          const base64 = (reader.result as string).split(",")[1];
+          const r = await fetch("/api/transcribe", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ audio: base64, type: isVideo ? "video" : "audio" }),
+          });
+          const d = await r.json();
+          if (d.topic) { setTopic(d.topic); showToast("Speech transcribed! Topic filled.", "success"); }
+          else if (d.text) { setTopic(`Video about: ${d.text.slice(0, 200)}`); showToast("Transcribed!", "success"); }
+        }
+      } catch { setError("Analysis failed."); }
       finally { setAnalyzing(false); }
     };
-    reader.readAsDataURL(file);
+    if (isImage) reader.readAsDataURL(file);
+    else reader.readAsDataURL(file);
   }
 
   function handleDrop(e: React.DragEvent) {
@@ -245,9 +259,9 @@ export default function HookGenerator() {
                   <p className="text-sm text-[#d4af37] animate-pulse">Analyzing image...</p>
                 ) : (
                   <label className="cursor-pointer block">
-                    <p className="text-sm text-[#fdfbf7]/35">Drop a screenshot or paste from clipboard</p>
-                    <p className="text-[10px] text-[#fdfbf7]/18 mt-1">AI will read it and fill the topic</p>
-                    <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+                    <p className="text-sm text-[#fdfbf7]/35">Drop screenshot, video or audio</p>
+                    <p className="text-[10px] text-[#fdfbf7]/18 mt-1">AI reads images & transcribes speech</p>
+                    <input type="file" accept="image/*,video/*,audio/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
                   </label>
                 )}
               </div>
