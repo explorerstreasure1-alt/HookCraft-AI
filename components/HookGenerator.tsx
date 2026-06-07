@@ -46,6 +46,8 @@ export default function HookGenerator() {
   const [copied, setCopied] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const prevCredits = useRef<number | null>(null);
 
   const activeSet = useMemo(() => archive.find(i => i.id === activeId) ?? archive[0], [activeId, archive]);
@@ -96,6 +98,37 @@ export default function HookGenerator() {
 
   async function copyText(text: string) {
     try { await navigator.clipboard.writeText(text); setCopied(text); setTimeout(() => setCopied(""), 1400); } catch { setCopied("Copy unavailable"); }
+  }
+
+  async function handleFile(file: File) {
+    if (!file.type.startsWith("image/")) return;
+    setAnalyzing(true);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const r = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: reader.result }),
+        });
+        const d = await r.json();
+        if (d.topic) { setTopic(d.topic); showToast("Image analyzed! Topic filled.", "success"); }
+        if (d.summary) setTopic(d.topic || d.summary);
+      } catch { setError("Image analysis failed."); }
+      finally { setAnalyzing(false); }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault(); setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  }
+
+  function handlePaste(e: React.ClipboardEvent) {
+    const file = e.clipboardData.files[0];
+    if (file) { e.preventDefault(); handleFile(file); }
   }
 
   function downloadTXT() {
@@ -201,6 +234,23 @@ export default function HookGenerator() {
 
           <div className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
             <div className="border border-white/10 bg-[#1a2332]/82 p-6">
+              <div
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleDrop}
+                onPaste={handlePaste}
+                className={`mb-4 border-2 border-dashed rounded-xl p-4 text-center transition cursor-pointer ${dragOver ? "border-[#d4af37] bg-[#d4af37]/5" : "border-white/10 hover:border-white/20"}`}
+              >
+                {analyzing ? (
+                  <p className="text-sm text-[#d4af37] animate-pulse">Analyzing image...</p>
+                ) : (
+                  <label className="cursor-pointer block">
+                    <p className="text-sm text-[#fdfbf7]/35">Drop a screenshot or paste from clipboard</p>
+                    <p className="text-[10px] text-[#fdfbf7]/18 mt-1">AI will read it and fill the topic</p>
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+                  </label>
+                )}
+              </div>
               <label className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d4af37]" htmlFor="topic">Video topic</label>
               <textarea id="topic" value={topic} onChange={e => setTopic(e.target.value)}
                 className="mt-4 min-h-24 w-full resize-none border border-white/10 bg-[#121214] p-4 text-base leading-7 text-[#fdfbf7] outline-none placeholder:text-[#fdfbf7]/30 focus:border-[#d4af37]/70"
