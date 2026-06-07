@@ -17,13 +17,18 @@ const stats = [
 
 export default function Hero() {
   const [hookIdx, setHookIdx] = useState(0);
-  const [stats, setStats] = useState({ visitors: 0, generated: 0 });
+  const [stats, setStats] = useState({ visitors: 0, generated: 0, scenes: 0, active: 0 });
 
   useEffect(() => {
-    fetch("/api/stats")
-      .then(r => r.json())
-      .then(d => setStats(d))
-      .catch(() => {});
+    function fetchStats() {
+      fetch("/api/stats")
+        .then(r => r.json())
+        .then(d => setStats(d))
+        .catch(() => {});
+    }
+    fetchStats();
+    const i = setInterval(fetchStats, 8000);
+    return () => clearInterval(i);
   }, []);
 
   useEffect(() => {
@@ -102,12 +107,23 @@ export default function Hero() {
 
           <div className="mt-12 flex gap-8 flex-wrap">
             <div>
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+                <p className="text-3xl font-bold text-[#d4af37]">{stats.active}</p>
+              </div>
+              <p className="text-xs text-[#fdfbf7]/30 mt-1">Online now</p>
+            </div>
+            <div>
               <p className="text-3xl font-bold text-[#d4af37]">{stats.visitors.toLocaleString()}</p>
-              <p className="text-xs text-[#fdfbf7]/30 mt-1">Visitors</p>
+              <p className="text-xs text-[#fdfbf7]/30 mt-1">Total visitors</p>
             </div>
             <div>
               <p className="text-3xl font-bold text-[#d4af37]">{stats.generated.toLocaleString()}</p>
-              <p className="text-xs text-[#fdfbf7]/30 mt-1">Hooks Generated</p>
+              <p className="text-xs text-[#fdfbf7]/30 mt-1">Hooks generated</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-[#d4af37]">{stats.scenes.toLocaleString()}</p>
+              <p className="text-xs text-[#fdfbf7]/30 mt-1">Scenes analyzed</p>
             </div>
           </div>
         </div>

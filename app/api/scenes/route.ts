@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAdmin } from "@/lib/supabase/admin";
 
 const MISTRAL_KEY = process.env.MISTRAL_API_KEY;
 
@@ -44,6 +45,8 @@ export async function POST(request: Request) {
 
     const data = await res.json();
     const text = data.choices?.[0]?.message?.content || "";
+
+    try { getAdmin()?.rpc("increment_stat", { stat_key: "scenes" }); } catch {}
 
     try { return NextResponse.json(JSON.parse(text)); }
     catch { return NextResponse.json({ scenes: [] }); }

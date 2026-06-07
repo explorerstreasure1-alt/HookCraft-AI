@@ -42,9 +42,14 @@ CREATE TABLE IF NOT EXISTS public.stats (
   key   TEXT PRIMARY KEY,
   value INTEGER NOT NULL DEFAULT 0
 );
-
 INSERT INTO public.stats (key, value) VALUES ('visitors', 0) ON CONFLICT (key) DO NOTHING;
 INSERT INTO public.stats (key, value) VALUES ('generated', 0) ON CONFLICT (key) DO NOTHING;
+INSERT INTO public.stats (key, value) VALUES ('scenes', 0) ON CONFLICT (key) DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS public.user_activity (
+  user_id TEXT PRIMARY KEY,
+  last_seen TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
 CREATE OR REPLACE FUNCTION public.increment_stat(stat_key TEXT)
 RETURNS void AS $$
