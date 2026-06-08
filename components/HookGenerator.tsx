@@ -338,9 +338,25 @@ export default function HookGenerator() {
             </div>
 
             <div className="border border-[#d4af37]/24 bg-[#121214] p-6 shadow-[0_0_60px_rgba(212,175,55,0.08)] overflow-y-auto max-h-[750px]">
+              {loading ? (
+                <div className="space-y-4">
+                  <div className="skeleton h-8 w-3/4" />
+                  <div className="skeleton h-6 w-1/2" />
+                  <div className="space-y-3 mt-4">
+                    {[1,2,3].map(i => <div key={i} className="skeleton h-20 w-full" />)}
+                  </div>
+                </div>
+              ) : (
+              <>
               <div className="mb-5 flex items-start justify-between gap-4 border-b border-white/10 pb-4">
                 <div><p className="text-xs uppercase tracking-[0.22em] text-[#d4af37]">Output</p><h3 className="mt-2 text-lg font-semibold tracking-[-0.03em] line-clamp-2">{activeSet.topic}</h3></div>
-                <span className="shrink-0 border border-white/10 px-3 py-2 text-xs text-[#fdfbf7]/58">{activeSet.platform}</span>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => { navigator.clipboard.writeText(location.href); showToast("Link copied!", "success"); }}
+                    className="border border-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-[#fdfbf7]/40 hover:text-[#d4af37] hover:border-[#d4af37]/40 rounded-lg transition">
+                    Share
+                  </button>
+                  <span className="shrink-0 border border-white/10 px-3 py-2 text-xs text-[#fdfbf7]/58">{activeSet.platform}</span>
+                </div>
               </div>
 
               {activeSet.title && (
@@ -397,6 +413,8 @@ export default function HookGenerator() {
                   <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] mb-2">Sound</p>
                   <p className="text-sm text-[#fdfbf7]/60 italic">"{activeSet.sound}"</p>
                 </div>
+              )}
+              </>
               )}
             </div>
           </div>

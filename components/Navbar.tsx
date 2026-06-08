@@ -32,8 +32,13 @@ export default function Navbar() {
     <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? "glass shadow-[0_4px_30px_rgba(0,0,0,0.3)]" : "bg-transparent"}`}>
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <a href="#hero" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#d4af37] to-[#c49b29] flex items-center justify-center text-[#0a0a0f] font-black text-sm shadow-[0_0_20px_rgba(212,175,55,0.3)]">
-            H
+          <div className="relative">
+            <div className="absolute inset-0 bg-[#d4af37] blur-md opacity-50 rounded-lg" />
+            <div className="relative w-9 h-9 rounded-lg bg-gradient-to-br from-[#d4af37] to-[#8b6914] flex items-center justify-center text-[#0a0a0f] font-black text-base shadow-[0_0_25px_rgba(212,175,55,0.4)] clip-hexagon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zm-9 9h7v7H4v-7zm9 0h7v7h-7v-7z" fill="currentColor"/>
+              </svg>
+            </div>
           </div>
           <span className="font-black text-white tracking-tight text-lg">HookCraft <span className="text-[#d4af37]">AI</span></span>
         </a>

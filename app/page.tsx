@@ -6,6 +6,7 @@ import KeyScenes from "@/components/KeyScenes";
 import Pricing from "@/components/Pricing";
 import ProductionLogic from "@/components/ProductionLogic";
 import Footer from "@/components/Footer";
+import CookieConsent from "@/components/CookieConsent";
 import { ToastContainer } from "@/components/Toast";
 
 export default function Page() {
@@ -19,6 +20,7 @@ export default function Page() {
       <Pricing />
       <ProductionLogic />
       <Footer />
+      <CookieConsent />
       <ToastContainer />
     </main>
   );

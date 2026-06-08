@@ -33,11 +33,11 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center bg-[#0a0a0f] overflow-hidden">
       <div className="absolute inset-0">
-        <img src="/images/hookcraft-cinematic-studio.jpg" alt="" className="w-full h-full object-cover scale-110 opacity-30" style={{ filter: "brightness(0.3) saturate(0.5)" }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f]/90 via-[#0a0a0f]/70 to-[#0a0a0f]" />
+        <img src="/images/hookcraft-cinematic-studio.jpg" alt="" className="w-full h-full object-cover scale-110 opacity-20" style={{ filter: "brightness(0.3) saturate(0.5)" }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f] via-[#0a0a0f]/80 to-[#0a0a0f]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,175,55,0.08),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(37,37,54,0.5),transparent_50%)]" />
-        <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-[#d4af37]/3 rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#252536]/30 rounded-full blur-[120px]" />
+        <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-[#d4af37]/3 rounded-full blur-[150px] animate-pulse" style={{ animationDuration: "8s" }} />
+        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#d4af37]/2 rounded-full blur-[150px] animate-pulse" style={{ animationDuration: "10s", animationDelay: "2s" }} />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6 py-32 sm:px-8 w-full">
@@ -47,21 +47,20 @@ export default function Hero() {
             <span className="text-xs font-medium text-[#d4af37] tracking-wide">AI-Powered Video Scripts</span>
           </div>
 
-          <h1 className="text-6xl sm:text-8xl lg:text-9xl font-black tracking-[-0.05em] leading-[0.9] mb-8 animate-fade-up relative py-28 sm:py-36">
-            <div className="absolute inset-0 rounded-3xl overflow-hidden opacity-60 -mx-8 sm:-mx-16">
-              <img src="/images/banner-2.png" alt="" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f]/90 via-transparent to-[#0a0a0f]/90" />
-              <div className="absolute inset-0 bg-[#0a0a0f]/30" />
+          <div className="relative rounded-3xl overflow-hidden p-8 sm:p-16 mb-8 -mx-4 sm:-mx-8">
+            <div className="absolute inset-0">
+              <img src="/images/banner-2.png" alt="" className="w-full h-full object-cover opacity-50" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f]/95 via-[#0a0a0f]/40 to-[#0a0a0f]/95" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f]/80 via-transparent to-[#0a0a0f]/60" />
             </div>
-            <span className="relative block">
-              <span className="text-white/90 block text-2xl sm:text-3xl font-medium tracking-[0.3em] uppercase mb-4">HookCraft AI</span>
-              <span className="text-white">Your video's first </span>
+            <h1 className="relative text-5xl sm:text-7xl lg:text-8xl font-black tracking-[-0.05em] leading-[0.95] animate-fade-up">
+              <span className="text-white">Your video&apos;s first </span>
               <span className="bg-gradient-to-r from-[#d4af37] via-[#f0d36b] to-[#c49b29] bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(212,175,55,0.3)]">3 seconds</span>
               <span className="text-white">,</span>
               <br />
-              <span className="text-zinc-400">written by AI.</span>
-            </span>
-          </h1>
+              <span className="text-zinc-400 text-3xl sm:text-5xl lg:text-6xl">written by AI.</span>
+            </h1>
+          </div>
 
           <div className="flex items-center justify-center gap-6 mb-8 animate-fade-up" style={{ animationDelay: "0.2s" }}>
             {[
