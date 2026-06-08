@@ -352,7 +352,7 @@ export default function HookGenerator() {
               </button>
             </div>
 
-            <div id="output-panel" className="border border-[#d4af37]/24 bg-[#121214] p-6 shadow-[0_0_60px_rgba(212,175,55,0.08)] overflow-y-auto max-h-[750px]">
+            <div id="output-panel" className="border border-[#d4af37]/24 bg-[#121214] p-6 shadow-[0_0_60px_rgba(212,175,55,0.08)] overflow-y-auto overflow-x-hidden max-h-[750px] break-words">
               {loading ? (
                 <div className="space-y-4">
                   <div className="skeleton h-8 w-3/4" />
@@ -392,7 +392,7 @@ export default function HookGenerator() {
               {activeSet.title && (
                 <div className="mb-4 border border-white/10 bg-[#1a2332]/30 p-3 rounded-lg">
                   <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] mb-1">Title</p>
-                  <p className="text-base font-semibold">{activeSet.title}</p>
+                  <p className="text-base font-semibold break-words">{activeSet.title}</p>
                   <button onClick={() => copyText(activeSet.title!)} className="mt-2 text-[10px] uppercase tracking-[0.2em] text-[#d4af37]/60 hover:text-[#f0d36b]">{copied === activeSet.title ? "Copied" : "Copy"}</button>
                 </div>
               )}
@@ -400,7 +400,7 @@ export default function HookGenerator() {
               {activeSet.thumbnail && (
                 <div className="mb-4 border border-[#d4af37]/20 bg-[#d4af37]/3 p-3 rounded-lg">
                   <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] mb-1">Thumbnail Text</p>
-                  <p className="text-xl font-bold text-[#d4af37]">{activeSet.thumbnail}</p>
+                  <p className="text-xl font-bold text-[#d4af37] break-words">{activeSet.thumbnail}</p>
                   <button onClick={() => copyText(activeSet.thumbnail!)} className="mt-2 text-[10px] uppercase tracking-[0.2em] text-[#d4af37]/60 hover:text-[#f0d36b]">{copied === activeSet.thumbnail ? "Copied" : "Copy"}</button>
                 </div>
               )}
@@ -418,7 +418,7 @@ export default function HookGenerator() {
                     <div key={i} className="group border border-white/10 bg-[#1a2332]/58 p-4 transition hover:border-[#d4af37]/55">
                       <div className="flex items-start gap-3">
                         <span className="font-mono text-sm text-[#d4af37]">0{i + 1}</span>
-                        <p className="flex-1 text-base leading-7 text-[#fdfbf7]/86">{h.text}</p>
+                        <p className="flex-1 text-base leading-7 text-[#fdfbf7]/86 break-words">{h.text}</p>
                         <span className="shrink-0 text-xs font-bold text-[#d4af37]">{h.score}</span>
                       </div>
                       <button onClick={() => copyText(h.text)} className="mt-2 text-[10px] uppercase tracking-[0.2em] text-[#d4af37]/60 group-hover:text-[#f0d36b]">{copied === h.text ? "Copied" : "Copy"}</button>
@@ -441,7 +441,7 @@ export default function HookGenerator() {
               {activeSet.sound && (
                 <div className="mt-5 border-t border-white/10 pt-4">
                   <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] mb-2">Sound</p>
-                  <p className="text-sm text-[#fdfbf7]/60 italic">"{activeSet.sound}"</p>
+                  <p className="text-sm text-[#fdfbf7]/60 italic break-words">"{activeSet.sound}"</p>
                 </div>
               )}
               </>
@@ -461,7 +461,7 @@ function Block({ label, text, score, copied, onCopy, hl }: { label: string; text
         <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]">{label}</p>
         {score !== undefined && <span className="text-xs font-bold text-[#d4af37]">{score}</span>}
       </div>
-      <p className={`leading-7 ${hl ? "text-lg text-[#fdfbf7]/90" : "text-sm text-[#fdfbf7]/74"}`}>{text}</p>
+      <p className={`leading-7 break-words ${hl ? "text-lg text-[#fdfbf7]/90" : "text-sm text-[#fdfbf7]/74"}`}>{text}</p>
       <button onClick={() => onCopy(text)} className="mt-2 text-[10px] uppercase tracking-[0.2em] text-[#d4af37]/60 hover:text-[#f0d36b]">{copied === text ? "Copied" : "Copy"}</button>
     </div>
   );
