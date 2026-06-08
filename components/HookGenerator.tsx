@@ -279,6 +279,7 @@ export default function HookGenerator() {
           <aside className="border border-white/10 bg-[#121214] p-5">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div><p className="text-xs uppercase tracking-[0.24em] text-[#fdfbf7]/48">Archive</p><p className="mt-1 text-lg font-semibold">Sessions</p></div>
+              <button onClick={() => setArchive([sample])} className="text-[10px] text-zinc-600 hover:text-red-400 transition-colors">Clear</button>
               <button onClick={downloadTXT} className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]/60 hover:text-[#d4af37]">Download TXT</button>
             </div>
             <div className="mt-5 space-y-3 max-h-[400px] overflow-y-auto">
