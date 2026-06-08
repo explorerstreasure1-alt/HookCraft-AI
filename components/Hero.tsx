@@ -64,7 +64,7 @@ export default function Hero() {
       {!bannerError && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[55%] w-full max-w-4xl pointer-events-none">
           <img
-            src="/banner-2.png"
+            src="/images/banner-2.png"
             alt=""
             onError={() => setBannerError(true)}
             className="w-full h-auto object-contain opacity-35"
