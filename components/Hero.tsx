@@ -11,10 +11,11 @@ const hooks = [
 export default function Hero() {
   const [h, setH] = useState(0);
   const [stats, setStats] = useState({ visitors: 0, generated: 0, scenes: 0, active: 0 });
-  const [imgError, setImgError] = useState(false);
+  const [bannerError, setBannerError] = useState(false);
+  const [bgError, setBgError] = useState(false);
 
   useEffect(() => {
-    const i = setInterval(() => setH(p => (p + 1) % hooks.length), 4000);
+    const i = setInterval(() => setH((p) => (p + 1) % hooks.length), 4000);
     return () => clearInterval(i);
   }, []);
 
@@ -22,7 +23,10 @@ export default function Hero() {
     function fetchStats(first: boolean) {
       const headers: Record<string, string> = {};
       if (first) headers["x-first-visit"] = "1";
-      fetch("/api/stats", { headers }).then(r => r.json()).then(d => setStats(d)).catch(() => {});
+      fetch("/api/stats", { headers })
+        .then((r) => r.json())
+        .then((d) => setStats(d))
+        .catch(() => {});
     }
     const firstVisit = !sessionStorage.getItem("hc_visited");
     if (firstVisit) sessionStorage.setItem("hc_visited", "1");
@@ -33,23 +37,20 @@ export default function Hero() {
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center bg-[#0a0a0f] overflow-hidden">
-      {/* Background layers */}
+      {/* Deep background layers */}
       <div className="absolute inset-0">
-        {!imgError && (
+        {!bgError && (
           <img
             src="/images/hookcraft-cinematic-studio.jpg"
             alt=""
-            onError={() => setImgError(true)}
-            className="w-full h-full object-cover scale-110 opacity-20"
-            style={{ filter: "brightness(0.3) saturate(0.5)" }}
+            onError={() => setBgError(true)}
+            className="w-full h-full object-cover scale-110 opacity-15"
+            style={{ filter: "brightness(0.3) saturate(0.4)" }}
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f] via-[#0a0a0f]/80 to-[#0a0a0f]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,175,55,0.08),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(37,37,54,0.5),transparent_50%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f] via-[#0a0a0f]/70 to-[#0a0a0f]" />
         <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-[#d4af37]/3 rounded-full blur-[150px] animate-pulse" style={{ animationDuration: "8s" }} />
         <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#d4af37]/2 rounded-full blur-[150px] animate-pulse" style={{ animationDuration: "10s", animationDelay: "2s" }} />
-
-        {/* Grid pattern */}
         <div
           className="absolute inset-0 opacity-[0.02]"
           style={{
@@ -59,41 +60,40 @@ export default function Hero() {
         />
       </div>
 
+      {/* Banner 2 - visible behind main content */}
+      {!bannerError && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[55%] w-full max-w-4xl pointer-events-none">
+          <img
+            src="/banner-2.png"
+            alt=""
+            onError={() => setBannerError(true)}
+            className="w-full h-auto object-contain opacity-35"
+            style={{ filter: "brightness(0.6) saturate(1.2)" }}
+          />
+        </div>
+      )}
+
       <div className="relative mx-auto max-w-7xl px-6 py-32 sm:px-8 w-full">
         <div className="text-center max-w-4xl mx-auto">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 glass-light rounded-full mb-8 animate-fade-in">
+          <div className="inline-flex items-center gap-2 glass-light px-4 py-1.5 rounded-full mb-8 animate-fade-in">
             <span className="h-2 w-2 rounded-full bg-[#d4af37] animate-pulse shadow-[0_0_10px_rgba(212,175,55,0.6)]" />
             <span className="text-xs font-semibold text-[#d4af37] tracking-wider uppercase">AI-Powered Video Scripts</span>
           </div>
 
-          {/* Banner area */}
-          <div className="relative rounded-3xl overflow-hidden p-8 sm:p-16 mb-8 -mx-4 sm:-mx-8 border border-white/[0.03]">
-            <div className="absolute inset-0">
-              {!imgError && (
-                <img
-                  src="/banner-2.png"
-                  alt=""
-                  onError={() => setImgError(true)}
-                  className="w-full h-full object-cover opacity-40"
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f]/95 via-[#0a0a0f]/40 to-[#0a0a0f]/95" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f]/80 via-transparent to-[#0a0a0f]/60" />
-            </div>
-            <h1 className="relative font-display text-5xl sm:text-7xl lg:text-8xl font-black tracking-[-0.03em] leading-[1.1] animate-fade-up">
-              <span className="text-[#F5F0E8]">Your video&apos;s first </span>
-              <span className="text-[#C9A227]">3 seconds</span>
-              <span className="text-[#F5F0E8]">,</span>
-              <br />
-              <span className="text-[#8A8778] text-3xl sm:text-5xl lg:text-6xl mt-4 inline-block">
-                written by AI.
-              </span>
-            </h1>
-          </div>
+          {/* Heading */}
+          <h1 className="font-display text-5xl sm:text-7xl lg:text-8xl font-black tracking-[-0.03em] leading-[1.1] mb-8 animate-fade-up relative z-10">
+            <span className="text-[#F5F0E8]">Your video&apos;s first </span>
+            <span className="text-[#C9A227]">3 seconds</span>
+            <span className="text-[#F5F0E8]">,</span>
+            <br />
+            <span className="text-[#8A8778] text-3xl sm:text-5xl lg:text-6xl mt-4 inline-block">
+              written by AI.
+            </span>
+          </h1>
 
           {/* Platform icons */}
-          <div className="flex items-center justify-center gap-4 sm:gap-6 mb-8 animate-fade-up" style={{ animationDelay: "0.2s" }}>
+          <div className="flex items-center justify-center gap-4 sm:gap-6 mb-8 animate-fade-up relative z-10" style={{ animationDelay: "0.2s" }}>
             {[
               {
                 name: "TikTok",
@@ -113,7 +113,7 @@ export default function Hero() {
               },
             ].map((p) => (
               <div key={p.name} className="flex flex-col items-center gap-2 group">
-                <div className="w-14 h-14 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center group-hover:scale-110 group-hover:border-[#d4af37]/30 group-hover:shadow-[0_0_20px_rgba(212,175,55,0.1)] transition-all duration-300">
+                <div className="w-14 h-14 rounded-2xl bg-zinc-800/60 backdrop-blur-sm border border-zinc-700/50 flex items-center justify-center group-hover:scale-110 group-hover:border-[#d4af37]/30 group-hover:shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all duration-300">
                   <svg viewBox="0 0 24 24" className="w-7 h-7" fill="white"><path d={p.svg} /></svg>
                 </div>
                 <span className="text-[10px] text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">{p.name}</span>
@@ -123,7 +123,7 @@ export default function Hero() {
 
           {/* Subtitle */}
           <p
-            className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-8 animate-fade-up leading-relaxed"
+            className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-8 animate-fade-up leading-relaxed relative z-10"
             style={{ animationDelay: "0.15s" }}
           >
             Stop staring at a blank page. Drop a topic or screenshot — HookCraft AI generates
@@ -131,7 +131,7 @@ export default function Hero() {
           </p>
 
           {/* CTAs */}
-          <div className="flex items-center justify-center gap-4 flex-wrap mb-12 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+          <div className="flex items-center justify-center gap-4 flex-wrap mb-12 animate-fade-up relative z-10" style={{ animationDelay: "0.3s" }}>
             <a href="#dashboard" className="gold-btn px-8 py-4 text-sm">
               Start Creating Free
             </a>
@@ -145,7 +145,7 @@ export default function Hero() {
           </div>
 
           {/* AI hook preview */}
-          <div className="glass-light rounded-2xl p-6 max-w-xl mx-auto mb-12 animate-scale-in" style={{ animationDelay: "0.4s" }}>
+          <div className="glass-light rounded-2xl p-6 max-w-xl mx-auto mb-12 animate-scale-in relative z-10" style={{ animationDelay: "0.4s" }}>
             <p className="text-[10px] text-zinc-500 uppercase tracking-[0.2em] mb-3">AI just wrote this</p>
             <p className="text-lg text-zinc-300 italic leading-relaxed transition-all duration-500" key={h}>
               &ldquo;{hooks[h]}&rdquo;
@@ -153,12 +153,12 @@ export default function Hero() {
           </div>
 
           {/* Stats row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-fade-up" style={{ animationDelay: "0.5s" }}>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-fade-up relative z-10" style={{ animationDelay: "0.5s" }}>
             {[
-              { v: stats.active, l: "Online now", icon: "●", color: "text-green-400" },
-              { v: stats.visitors.toLocaleString(), l: "Visitors", icon: "👥" },
-              { v: stats.generated.toLocaleString(), l: "Hooks created", icon: "✨" },
-              { v: stats.scenes.toLocaleString(), l: "Scenes analyzed", icon: "🎬" },
+              { v: stats.active, l: "Online now" },
+              { v: stats.visitors.toLocaleString(), l: "Visitors" },
+              { v: stats.generated.toLocaleString(), l: "Hooks created" },
+              { v: stats.scenes.toLocaleString(), l: "Scenes analyzed" },
             ].map((s) => (
               <div key={s.l} className="glass-light rounded-xl p-4 text-center hover:scale-[1.02] transition-transform duration-300">
                 <p className="text-2xl font-black text-white mb-1">{s.v}</p>
