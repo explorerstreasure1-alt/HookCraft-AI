@@ -47,10 +47,11 @@ export default function Hero() {
             <span className="text-xs font-medium text-[#d4af37] tracking-wide">AI-Powered Video Scripts</span>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-[-0.04em] leading-[0.95] mb-6 animate-fade-up relative py-8">
-            <div className="absolute inset-0 rounded-3xl overflow-hidden opacity-40">
-              <img src="/images/banner.png" alt="" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f] via-transparent to-[#0a0a0f]" />
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-[-0.04em] leading-[0.95] mb-6 animate-fade-up relative py-12">
+            <div className="absolute inset-0 rounded-3xl overflow-hidden opacity-60 -mx-8 sm:-mx-16">
+              <img src="/images/banner.png" alt="" className="w-full h-full object-cover scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f]/90 via-transparent to-[#0a0a0f]/90" />
+              <div className="absolute inset-0 bg-[#0a0a0f]/20" />
             </div>
             <span className="relative">
               <span className="text-white">Your video&apos;s first </span>
