@@ -33,10 +33,11 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center bg-[#0a0a0f] overflow-hidden">
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,175,55,0.06),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(37,37,54,0.4),transparent_50%)]" />
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-[#d4af37]/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-[#252536]/40 rounded-full blur-[100px]" />
-        <div className="absolute inset-0 bg-[url('/images/hookcraft-cinematic-studio.jpg')] opacity-[0.03] bg-cover bg-center" />
+        <img src="/images/hookcraft-cinematic-studio.jpg" alt="" className="w-full h-full object-cover scale-110 opacity-30" style={{ filter: "brightness(0.3) saturate(0.5)" }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f]/90 via-[#0a0a0f]/70 to-[#0a0a0f]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,175,55,0.08),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(37,37,54,0.5),transparent_50%)]" />
+        <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-[#d4af37]/3 rounded-full blur-[150px]" />
+        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#252536]/30 rounded-full blur-[120px]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6 py-32 sm:px-8 w-full">
