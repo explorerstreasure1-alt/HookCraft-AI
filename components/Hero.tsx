@@ -1,32 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PremiumButton from "./PremiumButton";
 
-const exampleHooks = [
-  "This AI tool writes viral video hooks in seconds. Creators are sleeping on it.",
-  "I stopped scripting my TikToks manually and my views tripled overnight.",
-  "The first 3 seconds decide everything. Here is how AI gives you the right words.",
-];
-
-const stats = [
-  { value: "10K+", label: "Hooks Generated" },
-  { value: "4.9", label: "Creator Rating" },
-  { value: "3s", label: "Avg Generation" },
+const hooks = [
+  "This AI tool writes viral hooks in seconds. Creators are sleeping on it.",
+  "I stopped scripting manually and my views tripled overnight.",
+  "The first 3 seconds decide everything. AI gives you the right words.",
 ];
 
 export default function Hero() {
-  const [hookIdx, setHookIdx] = useState(0);
+  const [h, setH] = useState(0);
   const [stats, setStats] = useState({ visitors: 0, generated: 0, scenes: 0, active: 0 });
+
+  useEffect(() => {
+    const i = setInterval(() => setH(p => (p + 1) % hooks.length), 4000);
+    return () => clearInterval(i);
+  }, []);
 
   useEffect(() => {
     function fetchStats(first: boolean) {
       const headers: Record<string, string> = {};
       if (first) headers["x-first-visit"] = "1";
-      fetch("/api/stats", { headers })
-        .then(r => r.json())
-        .then(d => setStats(d))
-        .catch(() => {});
+      fetch("/api/stats", { headers }).then(r => r.json()).then(d => setStats(d)).catch(() => {});
     }
     const firstVisit = !sessionStorage.getItem("hc_visited");
     if (firstVisit) sessionStorage.setItem("hc_visited", "1");
@@ -35,100 +30,60 @@ export default function Hero() {
     return () => clearInterval(i);
   }, []);
 
-  useEffect(() => {
-    const i = setInterval(() => setHookIdx((p) => (p + 1) % exampleHooks.length), 4000);
-    return () => clearInterval(i);
-  }, []);
-
   return (
-    <section
-      id="hero"
-      className="relative flex min-h-screen items-center overflow-hidden bg-[#121214] pt-20 text-[#fdfbf7]"
-    >
+    <section className="relative min-h-screen flex items-center bg-[#0a0a0f] overflow-hidden">
       <div className="absolute inset-0">
-        <img
-          src="/images/hookcraft-cinematic-studio.jpg"
-          alt="Cinematic video editing workstation for AI assisted short-form scripts"
-          className="h-full w-full scale-105 object-cover motion-safe:animate-[slowZoom_18s_ease-in-out_infinite_alternate]"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#121214_0%,rgba(18,18,20,0.88)_35%,rgba(18,18,20,0.38)_72%,rgba(18,18,20,0.2)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_72%,rgba(212,175,55,0.16),transparent_28%),radial-gradient(circle_at_82%_24%,rgba(26,35,50,0.52),transparent_32%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,175,55,0.06),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(37,37,54,0.4),transparent_50%)]" />
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-[#d4af37]/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-[#252536]/40 rounded-full blur-[100px]" />
+        <div className="absolute inset-0 bg-[url('/images/hookcraft-cinematic-studio.jpg')] opacity-[0.03] bg-cover bg-center" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-7xl px-5 py-24 sm:px-8">
-        <div className="max-w-3xl motion-safe:animate-[riseIn_900ms_ease-out_both]">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="text-3xl font-bold text-[#d4af37]">{'\u272F'}</span>
-            <span className="text-lg font-semibold uppercase tracking-[0.4em] text-[#d4af37] sm:text-xl">HookCraft<span className="text-sm align-super text-[#fdfbf7]/50"> AI.</span></span>
-          </div>
-          <div className="flex items-center gap-3 mb-6">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#d4af37]/30 bg-[#d4af37]/10 px-3 py-1 text-[11px] font-semibold text-[#d4af37]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37] animate-pulse" />
-              AI-Powered
-            </span>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#fdfbf7]/30">Trusted by 2,000+ creators</span>
+      <div className="relative mx-auto max-w-7xl px-6 py-32 sm:px-8 w-full">
+        <div className="text-center max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-full mb-8 animate-fade-in">
+            <span className="h-2 w-2 rounded-full bg-[#d4af37] animate-pulse shadow-[0_0_10px_rgba(212,175,55,0.6)]" />
+            <span className="text-xs font-medium text-[#d4af37] tracking-wide">AI-Powered Video Scripts</span>
           </div>
 
-          <h1 className="max-w-4xl text-5xl font-semibold leading-[0.94] tracking-[-0.06em] text-[#fdfbf7] sm:text-7xl lg:text-8xl">
-            Your video's first 3 seconds, written by AI.
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-[-0.04em] leading-[0.95] mb-6 animate-fade-up">
+            <span className="text-white">Your video&apos;s first </span>
+            <span className="bg-gradient-to-r from-[#d4af37] via-[#f0d36b] to-[#c49b29] bg-clip-text text-transparent">3 seconds</span>
+            <span className="text-white">, written by AI.</span>
           </h1>
-          <p className="mt-7 max-w-2xl text-base leading-8 text-[#fdfbf7]/74 sm:text-lg">
-            Stop staring at a blank page. HookCraft AI generates scroll-stopping hooks and full scripts for TikTok, YouTube Shorts, Instagram Reels, and LinkedIn. Copy, paste, go viral.
+
+          <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-8 animate-fade-up" style={{ animationDelay: "0.15s" }}>
+            Stop staring at a blank page. Drop a topic or screenshot — HookCraft AI generates scroll-stopping hooks, full scripts, hashtags, thumbnails. Copy, paste, record, go viral.
           </p>
 
-          <div className="mt-6 flex items-center gap-4 flex-wrap">
-            {[
-              { icon: "🎵", name: "TikTok" },
-              { icon: "▶️", name: "Shorts" },
-              { icon: "📸", name: "Reels" },
-              { icon: "💼", name: "LinkedIn" },
-            ].map((p) => (
-              <span key={p.name} className="inline-flex items-center gap-1.5 text-xs text-[#fdfbf7]/50">
-                {p.icon} {p.name}
-              </span>
-            ))}
-          </div>
-
-          <div className="mt-8 border border-[#d4af37]/20 bg-[#d4af37]/5 rounded-2xl p-5 backdrop-blur-sm">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]/60">AI just wrote this</span>
-              <span className="h-px flex-1 bg-[#d4af37]/20" />
-            </div>
-            <p className="text-lg leading-8 text-[#fdfbf7]/80 motion-safe:animate-[riseIn_600ms_ease-out_both]" key={hookIdx}>
-              &ldquo;{exampleHooks[hookIdx]}&rdquo;
-            </p>
-          </div>
-
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <PremiumButton href="#dashboard">Start Creating Free</PremiumButton>
-            <a
-              href="#pricing"
-              className="inline-flex items-center justify-center rounded-full border border-[#fdfbf7]/18 px-6 py-3 text-sm font-semibold uppercase tracking-[0.22em] text-[#fdfbf7] transition hover:border-[#d4af37] hover:text-[#d4af37]"
-            >
+          <div className="flex items-center justify-center gap-4 flex-wrap mb-12 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+            <a href="#dashboard" className="gold-shimmer text-[#0a0a0f] font-bold px-8 py-4 rounded-full text-sm uppercase tracking-wider hover:scale-105 transition-transform shadow-[0_0_40px_rgba(212,175,55,0.25)]">
+              Start Creating Free
+            </a>
+            <a href="#pricing" className="border border-zinc-700 text-zinc-300 font-semibold px-8 py-4 rounded-full text-sm uppercase tracking-wider hover:border-[#d4af37]/50 hover:text-[#d4af37] transition-all">
               View Pricing
             </a>
           </div>
 
-          <div className="mt-12 flex gap-8 flex-wrap">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-                <p className="text-3xl font-bold text-[#d4af37]">{stats.active}</p>
+          <div className="glass rounded-2xl p-6 max-w-xl mx-auto mb-12 animate-scale-in" style={{ animationDelay: "0.4s" }}>
+            <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3">AI just wrote this</p>
+            <p className="text-lg text-zinc-300 italic leading-relaxed" key={h}>
+              &ldquo;{hooks[h]}&rdquo;
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-fade-up" style={{ animationDelay: "0.5s" }}>
+            {[
+              { v: stats.active, l: "Online now", icon: "●", color: "text-green-400" },
+              { v: stats.visitors.toLocaleString(), l: "Visitors", icon: "👥" },
+              { v: stats.generated.toLocaleString(), l: "Hooks created", icon: "✨" },
+              { v: stats.scenes.toLocaleString(), l: "Scenes analyzed", icon: "🎬" },
+            ].map(s => (
+              <div key={s.l} className="glass-light rounded-xl p-4 text-center">
+                <p className="text-2xl font-black text-white mb-1">{s.v}</p>
+                <p className="text-[11px] text-zinc-500 uppercase tracking-wider">{s.l}</p>
               </div>
-              <p className="text-xs text-[#fdfbf7]/30 mt-1">Online now</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-[#d4af37]">{stats.visitors.toLocaleString()}</p>
-              <p className="text-xs text-[#fdfbf7]/30 mt-1">Total visitors</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-[#d4af37]">{stats.generated.toLocaleString()}</p>
-              <p className="text-xs text-[#fdfbf7]/30 mt-1">Hooks generated</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-[#d4af37]">{stats.scenes.toLocaleString()}</p>
-              <p className="text-xs text-[#fdfbf7]/30 mt-1">Scenes analyzed</p>
-            </div>
+            ))}
           </div>
         </div>
       </div>
