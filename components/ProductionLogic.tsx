@@ -2,38 +2,64 @@ export default function ProductionLogic() {
   return (
     <section className="bg-[#0a0a0f] px-6 py-24 sm:px-8 border-t border-zinc-800/30">
       <div className="mx-auto max-w-7xl">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="inline-flex items-center gap-2 px-3 py-1 glass rounded-full text-xs font-medium text-[#d4af37] tracking-wide mb-4">
+        <div className="text-center max-w-2xl mx-auto mb-16 animate-fade-up">
+          <span className="inline-flex items-center gap-2 px-3 py-1 glass-light rounded-full text-xs font-semibold text-[#d4af37] tracking-wide mb-4">
             Under the hood
           </span>
-          <h2 className="text-4xl sm:text-5xl font-black tracking-[-0.04em] text-white">
+          <h2 className="font-display text-4xl sm:text-5xl font-black tracking-[-0.04em] text-white">
             Small backend. Big results.
           </h2>
-          <p className="mt-4 text-zinc-400 text-lg">API keys and secrets stay server-side. The client only sees hooks and credit counts.</p>
+          <p className="mt-4 text-zinc-400 text-lg">
+            API keys and secrets stay server-side. The client only sees hooks and credit counts.
+          </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
-          <div className="card p-6">
-            <p className="text-xs font-bold text-[#d4af37] uppercase tracking-wider mb-4">POST /api/generate</p>
+        <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto stagger">
+          <div className="card p-6 group">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.4)]" />
+              <p className="text-xs font-bold text-[#d4af37] uppercase tracking-wider">
+                POST /api/generate
+              </p>
+            </div>
             <div className="space-y-2 text-sm text-zinc-400 font-mono">
-              <p>1. Read topic, platform, tone from body</p>
-              <p>2. Get user ID from middleware header</p>
-              <p>3. Check credits from database</p>
-              <p>4. Reject with 402 if empty</p>
-              <p>5. Send prompt to AI</p>
-              <p>6. Decrement one credit</p>
-              <p>7. Return hooks + credits to dashboard</p>
+              {[
+                "Read topic, platform, tone from body",
+                "Get user ID from middleware header",
+                "Check credits from database",
+                "Reject with 402 if empty",
+                "Send prompt to AI",
+                "Decrement one credit",
+                "Return hooks + credits to dashboard",
+              ].map((step, i) => (
+                <p key={i} className="flex items-start gap-2">
+                  <span className="text-[#d4af37]/40 text-xs shrink-0 mt-0.5">{i + 1}.</span>
+                  <span>{step}</span>
+                </p>
+              ))}
             </div>
           </div>
-          <div className="card p-6">
-            <p className="text-xs font-bold text-[#d4af37] uppercase tracking-wider mb-4">POST /api/webhook/lemon</p>
+          <div className="card p-6 group">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]" />
+              <p className="text-xs font-bold text-[#d4af37] uppercase tracking-wider">
+                POST /api/webhook/lemon
+              </p>
+            </div>
             <div className="space-y-2 text-sm text-zinc-400 font-mono">
-              <p>1. Read raw request body</p>
-              <p>2. Validate HMAC SHA-256 signature</p>
-              <p>3. order_created event detected</p>
-              <p>4. Extract credit amount from price</p>
-              <p>5. Add credits to user account</p>
-              <p>6. Return success confirmation</p>
+              {[
+                "Read raw request body",
+                "Validate HMAC SHA-256 signature",
+                "order_created event detected",
+                "Extract credit amount from price",
+                "Add credits to user account",
+                "Return success confirmation",
+              ].map((step, i) => (
+                <p key={i} className="flex items-start gap-2">
+                  <span className="text-[#d4af37]/40 text-xs shrink-0 mt-0.5">{i + 1}.</span>
+                  <span>{step}</span>
+                </p>
+              ))}
             </div>
           </div>
         </div>

@@ -22,8 +22,8 @@ export default function Architecture() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 stagger">
           {steps.map((s) => (
-            <div key={s.n} className="card p-6">
-              <span className="font-display text-5xl font-black text-[#1E1E18] group-hover:text-[rgba(201,162,39,0.08)] transition-colors">{s.n}</span>
+            <div key={s.n} className="card p-6 group">
+              <span className="font-display text-5xl font-black text-[#1E1E18] group-hover:text-[rgba(201,162,39,0.1)] transition-colors duration-300">{s.n}</span>
               <h3 className="font-sans text-lg font-bold text-[#F5F0E8] mt-3 mb-2">{s.t}</h3>
               <p className="text-sm text-[#8A8778] leading-relaxed">{s.d}</p>
             </div>
