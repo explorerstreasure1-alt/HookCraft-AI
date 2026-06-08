@@ -351,6 +351,21 @@ export default function HookGenerator() {
               <div className="mb-5 flex items-start justify-between gap-4 border-b border-white/10 pb-4">
                 <div><p className="text-xs uppercase tracking-[0.22em] text-[#d4af37]">Output</p><h3 className="mt-2 text-lg font-semibold tracking-[-0.03em] line-clamp-2">{activeSet.topic}</h3></div>
                 <div className="flex items-center gap-2">
+                  <button onClick={() => {
+                    const parts = [
+                      activeSet.title && `TITLE: ${activeSet.title}`,
+                      activeSet.hooks?.map((h, i) => `${i + 1}. ${h.text} (${h.score})`).join("\n"),
+                      activeSet.hook && `HOOK: ${activeSet.hook.text}`,
+                      activeSet.body && `BODY: ${activeSet.body}`,
+                      activeSet.cta && `CTA: ${activeSet.cta}`,
+                      activeSet.hashtags?.join(" "),
+                    ].filter(Boolean).join("\n\n");
+                    navigator.clipboard.writeText(parts);
+                    showToast("All copied!", "success");
+                  }}
+                    className="border border-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-[#fdfbf7]/40 hover:text-[#d4af37] hover:border-[#d4af37]/40 rounded-lg transition">
+                    Copy All
+                  </button>
                   <button onClick={() => { navigator.clipboard.writeText(location.href); showToast("Link copied!", "success"); }}
                     className="border border-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-[#fdfbf7]/40 hover:text-[#d4af37] hover:border-[#d4af37]/40 rounded-lg transition">
                     Share
@@ -378,7 +393,7 @@ export default function HookGenerator() {
               {activeSet.mode === "script" && activeSet.hook ? (
                 <div className="space-y-4">
                   <Block label="Hook" text={activeSet.hook.text} score={activeSet.hook.score} copied={copied} onCopy={copyText} hl />
-                  {activeSet.body && <Block label="Body" text={activeSet.body} copied={copied} onCopy={copyText} />}
+                  {activeSet.body && <Block label={`Body · ${Math.ceil(activeSet.body.split(" ").length / 3)}s read`} text={activeSet.body} copied={copied} onCopy={copyText} />}
                   {activeSet.cta && <Block label="CTA" text={activeSet.cta} copied={copied} onCopy={copyText} hl />}
                   {activeSet.description && <Block label="Description" text={activeSet.description} copied={copied} onCopy={copyText} />}
                 </div>
