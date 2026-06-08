@@ -8,6 +8,7 @@ import ProductionLogic from "@/components/ProductionLogic";
 import Footer from "@/components/Footer";
 import CookieConsent from "@/components/CookieConsent";
 import ScrollToTop from "@/components/ScrollToTop";
+import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import { ToastContainer } from "@/components/Toast";
 
 export default function Page() {
@@ -23,6 +24,7 @@ export default function Page() {
       <Footer />
       <CookieConsent />
       <ScrollToTop />
+      <KeyboardShortcuts />
       <ToastContainer />
     </main>
   );

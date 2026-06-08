@@ -111,6 +111,8 @@ export default function HookGenerator() {
   const [copied, setCopied] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [rateLeft, setRateLeft] = useState(0);
+  const [sessionCount, setSessionCount] = useState(0);
   const [analyzing, setAnalyzing] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const prevCredits = useRef<number | null>(null);
@@ -239,9 +241,13 @@ export default function HookGenerator() {
                 <div className="h-full rounded-full bg-gradient-to-r from-[#d4af37] to-[#f0d36b] transition-all duration-700" style={{ width: `${credits !== null ? Math.min(100, Math.max(0, (credits / 10) * 100)) : 0}%` }} />
               </div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-[#121214]/50 p-6 min-w-[140px] flex-1 flex flex-col justify-center items-center">
+            <div className="rounded-2xl border border-white/10 bg-[#121214]/50 p-6 min-w-[100px] flex-1 flex flex-col justify-center items-center">
               <span className="text-4xl font-bold text-[#fdfbf7]/40">{archive.length - 1}</span>
-              <span className="mt-1 text-[11px] uppercase tracking-[0.18em] text-[#fdfbf7]/25">generated</span>
+              <span className="mt-1 text-[11px] uppercase tracking-[0.18em] text-[#fdfbf7]/25">total</span>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-[#121214]/50 p-6 min-w-[100px] flex-1 flex flex-col justify-center items-center">
+              <span className="text-4xl font-bold text-[#d4af37]/60">{sessionCount}</span>
+              <span className="mt-1 text-[11px] uppercase tracking-[0.18em] text-[#d4af37]/30">this session</span>
             </div>
             {credits !== null && credits < cost && (
               <a href="#pricing" className="rounded-2xl border border-[#d4af37]/30 bg-[#d4af37]/5 p-6 min-w-[140px] flex-1 flex flex-col justify-center items-center hover:bg-[#d4af37]/10 transition group">
