@@ -10,6 +10,7 @@ type ResultSet = {
   id: number; topic: string; platform: string; mode: string;
   hooks?: HookItem[]; title?: string; hashtags?: string[]; thumbnail?: string;
   hook?: HookItem; body?: string; cta?: string; description?: string; sound?: string;
+  created: string;
 };
 
 const platforms = ["TikTok", "YouTube Shorts", "Instagram Reels", "LinkedIn Video"];
@@ -32,7 +33,7 @@ const trends: Record<string, string[]> = {
   "LinkedIn Video": ["Career pivoting stories", "Leadership hot takes", "Startup fundraising BTS", "Remote work productivity", "Networking at events raw"],
 };
 
-const sample: ResultSet = { id: 101, topic: "AI side hustle myth", platform: "YouTube Shorts", mode: "hooks", hooks: [{ text: "Everyone sells the AI dream but nobody shows this part", score: 87 }], title: "The AI Side Hustle Myth", hashtags: ["#ai", "#truth"], thumbnail: "AI EXPOSED" };
+const sample: ResultSet =   { id: 101, topic: "AI side hustle myth", platform: "YouTube Shorts", mode: "hooks", hooks: [{ text: "Everyone sells the AI dream but nobody shows this part", score: 87 }], title: "The AI Side Hustle Myth", hashtags: ["#ai", "#truth"], thumbnail: "AI EXPOSED", created: new Date().toISOString() };
 
 async function extractAudio(file: File): Promise<string> {
   const audioCtx = new AudioContext({ sampleRate: 16000 });
@@ -149,7 +150,7 @@ export default function HookGenerator() {
       const d = await r.json();
       if (!r.ok) { setError(d.error || "Failed."); setLoading(false); return; }
       const next: ResultSet = {
-        id: Date.now(), topic: topic.trim(), platform, mode: d.mode,
+        id: Date.now(), topic: topic.trim(), platform, mode: d.mode, created: new Date().toISOString(),
         hooks: d.hooks, title: d.title, hashtags: d.hashtags, thumbnail: d.thumbnail,
         hook: d.hook, body: d.body, cta: d.cta, description: d.description, sound: d.sound,
       };
@@ -289,7 +290,7 @@ export default function HookGenerator() {
                   style={{ marginLeft: `${Math.min(i, 3) * 10}px`, width: `calc(100% - ${Math.min(i, 3) * 10}px)` }}>
                   <span className="block text-xs uppercase tracking-[0.2em] text-[#d4af37]/80">{item.platform}</span>
                   <span className="mt-1 block font-medium text-sm truncate">{item.topic}</span>
-                  <span className="mt-1 text-[10px] text-[#fdfbf7]/30">{item.mode}</span>
+                  <span className="mt-1 text-[10px] text-[#fdfbf7]/20">{item.mode} · {new Date(item.created).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                 </button>
               ))}
             </div>
