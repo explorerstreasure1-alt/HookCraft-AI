@@ -347,7 +347,7 @@ export default function HookGenerator() {
               </div>
               {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
               <button onClick={handleGenerate} disabled={loading || (credits !== null && credits < cost)}
-                className="mt-4 w-full rounded-full bg-[#d4af37] px-6 py-4 text-sm font-bold uppercase tracking-[0.22em] text-[#121214] hover:bg-[#f0d36b] disabled:cursor-not-allowed disabled:bg-[#fdfbf7]/20 disabled:text-[#fdfbf7]/45">
+                className="gold-btn w-full px-6 py-4 text-sm">
                 {loading ? "Generating..." : `Generate (${cost} credit${cost > 1 ? "s" : ""})`}
               </button>
             </div>
