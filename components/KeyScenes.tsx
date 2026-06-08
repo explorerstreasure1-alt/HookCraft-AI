@@ -391,13 +391,17 @@ export default function KeyScenes() {
         }
       }
 
-      recorder.stop(); await done;
-      const blob = new Blob(chunks, { type: "video/webm" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a"); a.href = url; a.download = `hookcraft-edit-${Date.now()}.webm`; a.click();
-      URL.revokeObjectURL(url);
-      showToast("Video rendered!", "success");
-    } catch { showToast("Render failed.", "info"); }
+    recorder.stop(); await done;
+    const blob = new Blob(chunks, { type: "video/webm" });
+    const downloadUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = downloadUrl; a.download = `hookcraft-edit-${Date.now()}.webm`; a.click();
+
+    const history = JSON.parse(localStorage.getItem("hc-renders") || "[]");
+    history.unshift({ name: `hookcraft-edit-${Date.now()}.webm`, date: new Date().toISOString(), duration: fmtTime(totalDuration), scenes: selected.length });
+    localStorage.setItem("hc-renders", JSON.stringify(history.slice(0, 5)));
+
+    showToast("Video rendered! Download started.", "success");
+  } catch { showToast("Render failed.", "info"); }
     finally { setRendering(false); setRenderProgress(0); }
   }
 
