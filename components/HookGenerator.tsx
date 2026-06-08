@@ -159,6 +159,8 @@ export default function HookGenerator() {
       setArchive(c => [next, ...c].slice(0, 15));
       setActiveId(next.id);
       if (d.credits !== undefined) setCredits(d.credits);
+      setSessionCount(s => s + 1);
+      document.getElementById("output-panel")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     } catch { setError("Network error."); }
     finally { setLoading(false); }
   }
@@ -350,7 +352,7 @@ export default function HookGenerator() {
               </button>
             </div>
 
-            <div className="border border-[#d4af37]/24 bg-[#121214] p-6 shadow-[0_0_60px_rgba(212,175,55,0.08)] overflow-y-auto max-h-[750px]">
+            <div id="output-panel" className="border border-[#d4af37]/24 bg-[#121214] p-6 shadow-[0_0_60px_rgba(212,175,55,0.08)] overflow-y-auto max-h-[750px]">
               {loading ? (
                 <div className="space-y-4">
                   <div className="skeleton h-8 w-3/4" />
