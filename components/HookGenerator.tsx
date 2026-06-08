@@ -315,8 +315,13 @@ export default function HookGenerator() {
               </div>
               <label className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d4af37]" htmlFor="topic">Video topic</label>
               <textarea id="topic" value={topic} onChange={e => setTopic(e.target.value)}
-                className="mt-4 min-h-24 w-full resize-none border border-white/10 bg-[#121214] p-4 text-base leading-7 text-[#fdfbf7] outline-none placeholder:text-[#fdfbf7]/30 focus:border-[#d4af37]/70"
+                className="mt-4 min-h-24 w-full resize-none border border-white/10 bg-[#121214] p-4 text-base leading-7 text-[#fdfbf7] outline-none placeholder:text-[#fdfbf7]/30 focus:border-[#d4af37]/70 rounded-xl"
                 placeholder="Describe your video idea..." />
+              <div className="flex gap-1.5 mt-2 flex-wrap">
+                {["How I made $1000 online", "My biggest mistake", "Why everyone is wrong about AI"].map(t => (
+                  <button key={t} onClick={() => setTopic(t)} className="text-[10px] text-zinc-500 hover:text-[#d4af37] bg-zinc-800/30 px-2.5 py-1 rounded-full transition-colors">{t}</button>
+                ))}
+              </div>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <div><label className="text-xs uppercase tracking-[0.2em] text-[#fdfbf7]/50">Platform</label>
                   <select value={platform} onChange={e => setPlatform(e.target.value)} className="mt-3 w-full border border-white/10 bg-[#121214] px-4 py-3 text-sm text-[#fdfbf7] outline-none focus:border-[#d4af37]/70">{platforms.map(p => <option key={p}>{p}</option>)}</select></div>

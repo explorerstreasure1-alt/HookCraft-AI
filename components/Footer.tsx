@@ -6,6 +6,11 @@ export default function Footer() {
           <div className="w-6 h-6 rounded bg-gradient-to-br from-[#d4af37] to-[#c49b29] flex items-center justify-center text-[#0a0a0f] font-black text-[10px]">H</div>
           <span className="text-sm font-bold text-white">HookCraft <span className="text-[#d4af37]">AI</span></span>
         </div>
+        <div className="flex items-center gap-6">
+          <a href="#" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Privacy</a>
+          <a href="#" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Terms</a>
+          <a href="mailto:support@hookcraft.ai" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Contact</a>
+        </div>
         <p className="text-xs text-zinc-600">AI-powered video hooks for creators worldwide.</p>
       </div>
     </footer>
