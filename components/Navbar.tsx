@@ -51,10 +51,10 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           {credits !== null && (
-            <span className="hidden sm:inline-flex items-center gap-2 glass-light rounded-full px-3.5 py-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#d4af37] shadow-[0_0_8px_rgba(212,175,55,0.7)]" />
-              <span className="text-xs font-bold text-[#d4af37]">{credits}</span>
-            </span>
+              <span className="hidden sm:inline-flex items-center gap-2 bg-[#1E1E18] border border-[rgba(201,162,39,0.3)] rounded-2xl px-3.5 py-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#C9A227]" />
+                <span className="text-xs font-bold text-[#C9A227] font-mono">{credits}</span>
+              </span>
           )}
           {user ? (
             <button onClick={signOut} className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">

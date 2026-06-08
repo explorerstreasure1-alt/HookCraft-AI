@@ -53,12 +53,12 @@ export default function Hero() {
               <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f]/95 via-[#0a0a0f]/40 to-[#0a0a0f]/95" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f]/80 via-transparent to-[#0a0a0f]/60" />
             </div>
-            <h1 className="relative text-5xl sm:text-7xl lg:text-8xl font-black tracking-[-0.05em] leading-[1.1] animate-fade-up">
-              <span className="text-white">Your video&apos;s first </span>
-              <span className="bg-gradient-to-r from-[#d4af37] via-[#f0d36b] to-[#c49b29] bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(212,175,55,0.3)]">3 seconds</span>
-              <span className="text-white">,</span>
+            <h1 className="relative font-display text-5xl sm:text-7xl lg:text-8xl font-black tracking-[-0.03em] leading-[1.1] animate-fade-up">
+              <span className="text-[#F5F0E8]">Your video&apos;s first </span>
+              <span className="text-[#C9A227]">3 seconds</span>
+              <span className="text-[#F5F0E8]">,</span>
               <br />
-              <span className="text-zinc-400 text-3xl sm:text-5xl lg:text-6xl mt-4 inline-block">written by AI.</span>
+              <span className="text-[#8A8778] text-3xl sm:text-5xl lg:text-6xl mt-4 inline-block">written by AI.</span>
             </h1>
           </div>
 
@@ -83,12 +83,8 @@ export default function Hero() {
           </p>
 
           <div className="flex items-center justify-center gap-4 flex-wrap mb-12 animate-fade-up" style={{ animationDelay: "0.3s" }}>
-            <a href="#dashboard" className="gold-shimmer text-[#0a0a0f] font-bold px-8 py-4 rounded-full text-sm uppercase tracking-wider hover:scale-105 transition-transform shadow-[0_0_40px_rgba(212,175,55,0.25)]">
-              Start Creating Free
-            </a>
-            <a href="#pricing" className="border border-zinc-700 text-zinc-300 font-semibold px-8 py-4 rounded-full text-sm uppercase tracking-wider hover:border-[#d4af37]/50 hover:text-[#d4af37] transition-all">
-              View Pricing
-            </a>
+            <a href="#dashboard" className="gold-btn px-8 py-4 text-sm">Start Creating Free</a>
+            <a href="#pricing" className="border border-[rgba(201,162,39,0.4)] text-[#C9A227] font-semibold px-8 py-4 text-sm uppercase tracking-wider hover:bg-[rgba(201,162,39,0.08)] transition-all" style={{ borderRadius: "8px" }}>View Pricing</a>
           </div>
 
           <div className="glass rounded-2xl p-6 max-w-xl mx-auto mb-12 animate-scale-in" style={{ animationDelay: "0.4s" }}>
