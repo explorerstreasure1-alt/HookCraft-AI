@@ -1,8 +1,8 @@
 "use client";
 
-import { createSupabaseClient } from "@/lib/supabase/client";
+import { useSupabaseClient } from "@/lib/supabase/client";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
+import type { User, AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 type AuthContextType = {
   user: User | null;
@@ -19,20 +19,27 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createSupabaseClient();
+  const supabase = useSupabaseClient();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-      setLoading(false);
+    let mounted = true;
+
+    supabase.auth.getUser().then(({ data }: { data: { user: User | null } }) => {
+      if (mounted) {
+        setUser(data.user);
+        setLoading(false);
+      }
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       setUser(session?.user ?? null);
     });
 
-    return () => listener.subscription.unsubscribe();
-  }, []);
+    return () => {
+      mounted = false;
+      listener.subscription.unsubscribe();
+    };
+  }, [supabase]);
 
   async function signOut() {
     await supabase.auth.signOut();

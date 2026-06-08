@@ -1,6 +1,6 @@
 "use client";
 
-import { createSupabaseClient } from "@/lib/supabase/client";
+import { useSupabaseClient } from "@/lib/supabase/client";
 import { useState, useRef, useEffect } from "react";
 
 export default function AuthPage() {
@@ -10,7 +10,7 @@ export default function AuthPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const supabase = createSupabaseClient();
+  const supabase = useSupabaseClient();
   const codeInputs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {

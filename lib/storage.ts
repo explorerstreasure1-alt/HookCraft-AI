@@ -2,10 +2,7 @@ import { getAdmin } from "@/lib/supabase/admin";
 
 export async function getCredits(userId: string): Promise<number> {
   const admin = getAdmin();
-  if (!admin) {
-    console.log("[storage] no admin client, returning default 3");
-    return 3;
-  }
+  if (!admin) return 3;
 
   const { data, error } = await admin
     .from("users")
@@ -31,7 +28,7 @@ export async function setCredits(userId: string, amount: number): Promise<void> 
 
   const { error } = await admin
     .from("users")
-    .upsert({ id: userId, credits: amount });
+    .upsert({ id: userId, credits: Math.max(0, amount) });
 
   if (error) {
     console.error("[storage] setCredits error:", error.message);
@@ -39,9 +36,19 @@ export async function setCredits(userId: string, amount: number): Promise<void> 
   }
 }
 
-export async function decrementCredits(userId: string): Promise<number> {
+export async function decrementCredits(
+  userId: string,
+  amount: number = 1
+): Promise<number> {
+  const admin = getAdmin();
+  if (!admin) throw new Error("Supabase admin client not available");
+
   const current = await getCredits(userId);
-  const next = Math.max(0, current - 1);
+  if (current < amount) {
+    throw new Error(`Insufficient credits: have ${current}, need ${amount}`);
+  }
+
+  const next = current - amount;
   await setCredits(userId, next);
   return next;
 }

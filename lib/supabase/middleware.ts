@@ -2,20 +2,28 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
+  const response = NextResponse.next({ request });
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || "",
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
     {
       cookies: {
-        getAll() { return request.cookies.getAll(); },
+        getAll() {
+          return request.cookies.getAll();
+        },
         setAll(items) {
-          items.forEach(({ name, value, options }) => {});
+          items.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
         },
       },
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   let userId = "";
   if (user) {
@@ -25,10 +33,7 @@ export async function updateSession(request: NextRequest) {
     if (!userId) userId = crypto.randomUUID();
   }
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-user-id", userId);
-
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  response.headers.set("x-user-id", userId);
 
   if (!request.cookies.get("hc_uid")?.value && !user) {
     response.cookies.set("hc_uid", userId, {

@@ -550,62 +550,66 @@ export default function KeyScenes() {
                       onDragEnd={() => setDragIdx(null)}
                       className={`group rounded-xl overflow-hidden border transition-all ${s.selected ? "border-[#d4af37]/30 bg-[#1a2332]" : "border-white/5 bg-[#0c0d10] opacity-40 hover:opacity-70"}`}
                     >
-                      <div className="flex">
-                        {s.frameUrl && (
-                          <div
-                            className="w-24 h-16 shrink-0 bg-cover bg-center cursor-pointer relative"
-                            style={{ backgroundImage: `url(${s.frameUrl})` }}
-                            onMouseEnter={() => hoverScene(s.start)}
-                            onClick={() => playScene(s.start)}
-                          >
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
-                              <span className="text-white text-lg">{'\u25B6'}</span>
+                      <div className="flex flex-col sm:flex-row">
+                        <div className="flex">
+                          {s.frameUrl && (
+                            <div
+                              className="w-24 h-16 shrink-0 bg-cover bg-center cursor-pointer relative"
+                              style={{ backgroundImage: `url(${s.frameUrl})` }}
+                              onMouseEnter={() => hoverScene(s.start)}
+                              onClick={() => playScene(s.start)}
+                            >
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
+                                <span className="text-white text-lg">{'\u25B6'}</span>
+                              </div>
                             </div>
+                          )}
+                          <div className="flex-1 p-3 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <button onClick={() => toggleScene(s.id)} className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition cursor-pointer ${s.selected ? "border-[#d4af37] bg-[#d4af37]" : "border-white/20"}`}>
+                                {s.selected && <span className="text-[8px] text-[#121214] font-bold">{'\u2713'}</span>}
+                              </button>
+                              <span className="text-[11px] font-semibold truncate">{s.title}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                              <button onClick={() => adjustDuration(s.id, -1)} className="text-[10px] text-[#d4af37]/40 hover:text-[#d4af37] cursor-pointer select-none" title="Shorten">{'\u25C0'}</button>
+                              <span className="text-[10px] text-[#d4af37] font-mono whitespace-nowrap">{fmtTime(s.start)} - {fmtTime(s.end)}</span>
+                              <button onClick={() => adjustDuration(s.id, 1)} className="text-[10px] text-[#d4af37]/40 hover:text-[#d4af37] cursor-pointer select-none" title="Extend">{'\u25B6'}</button>
+                              <span className="text-[9px] text-[#fdfbf7]/20 truncate">{s.visual_clue}</span>
+                              <span className="text-[10px] font-bold text-[#d4af37]">{s.hook.score}</span>
+                            </div>
+                            <p className="text-[10px] text-[#fdfbf7]/35 mt-1 italic truncate">&ldquo;{s.hook.text}&rdquo;</p>
+                            <input
+                              type="text" value={s.text} onChange={e => setScenes(prev => prev.map(x => x.id === s.id ? { ...x, text: e.target.value } : x))}
+                              placeholder="Add text overlay..."
+                              className="mt-2 w-full bg-black/30 border border-white/5 px-2.5 py-1.5 text-[10px] text-[#fdfbf7]/50 outline-none focus:border-[#d4af37]/40 rounded-lg placeholder:text-[#fdfbf7]/12"
+                            />
                           </div>
-                        )}
-                        <div className="flex-1 p-3 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <button onClick={() => toggleScene(s.id)} className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition ${s.selected ? "border-[#d4af37] bg-[#d4af37]" : "border-white/20"}`}>
-                              {s.selected && <span className="text-[8px] text-[#121214] font-bold">{'\u2713'}</span>}
-                            </button>
-                            <span className="text-[11px] font-semibold truncate">{s.title}</span>
-                          </div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <button onClick={() => adjustDuration(s.id, -1)} className="text-[10px] text-[#d4af37]/40 hover:text-[#d4af37] cursor-pointer select-none" title="Shorten">{'\u25C0'}</button>
-                            <span className="text-[10px] text-[#d4af37] font-mono">{fmtTime(s.start)} - {fmtTime(s.end)}</span>
-                            <button onClick={() => adjustDuration(s.id, 1)} className="text-[10px] text-[#d4af37]/40 hover:text-[#d4af37] cursor-pointer select-none" title="Extend">{'\u25B6'}</button>
-                            <span className="text-[9px] text-[#fdfbf7]/20">{s.visual_clue}</span>
-                            <span className="ml-auto text-[10px] font-bold text-[#d4af37]">{s.hook.score}</span>
-                          </div>
-                          <p className="text-[10px] text-[#fdfbf7]/35 mt-1 italic truncate">&ldquo;{s.hook.text}&rdquo;</p>
-                          <input
-                            type="text" value={s.text} onChange={e => setScenes(prev => prev.map(x => x.id === s.id ? { ...x, text: e.target.value } : x))}
-                            placeholder="Add text overlay for this scene..."
-                            className="mt-2 w-full bg-black/30 border border-white/5 px-2.5 py-1.5 text-[10px] text-[#fdfbf7]/50 outline-none focus:border-[#d4af37]/40 rounded-lg placeholder:text-[#fdfbf7]/12"
-                          />
                         </div>
-                        <button onClick={() => { navigator.clipboard.writeText(s.hook.text); setCopied(s.hook.text); setTimeout(() => setCopied(""), 1400); }}
-                          className="shrink-0 w-8 flex items-center justify-center text-[10px] text-[#d4af37]/30 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition">
-                          {copied === s.hook.text ? '\u2713' : '\uD83D\uDCCB'}
-                        </button>
-                        <button onClick={() => duplicateScene(s.id)} title="Duplicate"
-                          className="shrink-0 w-8 flex items-center justify-center text-[10px] text-[#fdfbf7]/15 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition">
-                          {'\uD83D\uDD01'}
-                        </button>
-                        <button onClick={() => downloadScene(s.id)} title="Download this scene"
-                          className="shrink-0 w-8 flex items-center justify-center text-[10px] text-[#fdfbf7]/10 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition">
-                          {'\u2B07'}
-                        </button>
-                        {i < scenes.length - 1 && (
-                          <button onClick={() => mergeAdjacent(s.id)} title="Merge with next scene"
-                            className="shrink-0 w-8 flex items-center justify-center text-[10px] text-[#fdfbf7]/15 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition">
-                            {'\u2194'}
+                        <div className="flex sm:flex-col border-t sm:border-t-0 sm:border-l border-white/5 shrink-0">
+                          <button onClick={() => { navigator.clipboard.writeText(s.hook.text); setCopied(s.hook.text); setTimeout(() => setCopied(""), 1400); }}
+                            className="flex-1 sm:flex-initial h-8 sm:h-auto px-2 sm:px-0 flex items-center justify-center text-[10px] text-[#d4af37]/30 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition cursor-pointer" title="Copy hook">
+                            {copied === s.hook.text ? '\u2713' : '\uD83D\uDCCB'}
                           </button>
-                        )}
-                        <button onClick={() => splitScene(s.id)} title="Split scene"
-                          className="shrink-0 w-8 flex items-center justify-center text-[10px] text-[#fdfbf7]/10 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition">
-                          {'\u2702'}
-                        </button>
+                          <button onClick={() => duplicateScene(s.id)} title="Duplicate"
+                            className="flex-1 sm:flex-initial h-8 sm:h-auto px-2 sm:px-0 flex items-center justify-center text-[10px] text-[#fdfbf7]/15 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition cursor-pointer">
+                            {'\uD83D\uDD01'}
+                          </button>
+                          <button onClick={() => downloadScene(s.id)} title="Download"
+                            className="flex-1 sm:flex-initial h-8 sm:h-auto px-2 sm:px-0 flex items-center justify-center text-[10px] text-[#fdfbf7]/10 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition cursor-pointer">
+                            {'\u2B07'}
+                          </button>
+                          {i < scenes.length - 1 && (
+                            <button onClick={() => mergeAdjacent(s.id)} title="Merge"
+                              className="flex-1 sm:flex-initial h-8 sm:h-auto px-2 sm:px-0 flex items-center justify-center text-[10px] text-[#fdfbf7]/15 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition cursor-pointer">
+                              {'\u2194'}
+                            </button>
+                          )}
+                          <button onClick={() => splitScene(s.id)} title="Split"
+                            className="flex-1 sm:flex-initial h-8 sm:h-auto px-2 sm:px-0 flex items-center justify-center text-[10px] text-[#fdfbf7]/10 hover:text-[#d4af37] hover:bg-[#d4af37]/5 transition cursor-pointer">
+                            {'\u2702'}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateHooks, generateScript, generateSeries, generateKeyMoments } from "@/lib/mistral";
-import { getCredits, setCredits } from "@/lib/storage";
-import { getAdmin } from "@/lib/supabase/admin";
+import { getCredits, decrementCredits } from "@/lib/storage";
 
 const cooldowns = new Map<string, number>();
 
@@ -11,7 +10,8 @@ export async function POST(request: Request) {
 
   const rateKey = `rate:${userId}`;
   const now = Date.now();
-  if (now - (cooldowns.get(rateKey) ?? 0) < 30_000) {
+  const lastCall = cooldowns.get(rateKey) ?? 0;
+  if (now - lastCall < 30_000) {
     return NextResponse.json({ error: "Wait before generating again." }, { status: 429 });
   }
 
@@ -22,11 +22,14 @@ export async function POST(request: Request) {
   if (!topic.trim() && !transcript) return NextResponse.json({ error: "Topic or transcript required" }, { status: 400 });
   if (topic.length > 5000) return NextResponse.json({ error: "Topic too long" }, { status: 400 });
 
-  let credits = 3;
-  try { credits = await getCredits(userId); } catch { /* fallback */ }
-
   const cost = mode === "series" ? 3 : 1;
-  if (credits < cost) return NextResponse.json({ error: `Need ${cost} credits. You have ${credits}.` }, { status: 402 });
+
+  let credits: number;
+  try { credits = await getCredits(userId); } catch { return NextResponse.json({ error: "Could not check credits" }, { status: 500 }); }
+
+  if (credits < cost) {
+    return NextResponse.json({ error: `Need ${cost} credits. You have ${credits}.` }, { status: 402 });
+  }
 
   cooldowns.set(rateKey, now);
 
@@ -40,9 +43,7 @@ export async function POST(request: Request) {
     else if (mode === "moments") data = await generateKeyMoments(inp, transcript);
     else data = await generateHooks(inp);
 
-    const newCredits = credits - cost;
-    await setCredits(userId, newCredits);
-    try { getAdmin()?.rpc("increment_stat", { stat_key: "generated" }); } catch {}
+    const newCredits = await decrementCredits(userId, cost);
 
     return NextResponse.json({ ...data, credits: newCredits, mode, topic: topic.trim(), platform });
   } catch (err) {
