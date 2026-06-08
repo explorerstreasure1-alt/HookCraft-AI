@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
   const { topic = "", platform = "TikTok", tone = "cinematic", mode = "hooks", transcript = "" } = body;
   if (!topic.trim() && !transcript) return NextResponse.json({ error: "Topic or transcript required" }, { status: 400 });
-  if (topic.length > 500) return NextResponse.json({ error: "Topic too long" }, { status: 400 });
+  if (topic.length > 5000) return NextResponse.json({ error: "Topic too long" }, { status: 400 });
 
   let credits = 3;
   try { credits = await getCredits(userId); } catch { /* fallback */ }
