@@ -53,12 +53,12 @@ export default function Hero() {
               <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f]/95 via-[#0a0a0f]/40 to-[#0a0a0f]/95" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f]/80 via-transparent to-[#0a0a0f]/60" />
             </div>
-            <h1 className="relative text-5xl sm:text-7xl lg:text-8xl font-black tracking-[-0.05em] leading-[0.95] animate-fade-up">
+            <h1 className="relative text-5xl sm:text-7xl lg:text-8xl font-black tracking-[-0.05em] leading-[1.1] animate-fade-up">
               <span className="text-white">Your video&apos;s first </span>
               <span className="bg-gradient-to-r from-[#d4af37] via-[#f0d36b] to-[#c49b29] bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(212,175,55,0.3)]">3 seconds</span>
               <span className="text-white">,</span>
               <br />
-              <span className="text-zinc-400 text-3xl sm:text-5xl lg:text-6xl">written by AI.</span>
+              <span className="text-zinc-400 text-3xl sm:text-5xl lg:text-6xl mt-4 inline-block">written by AI.</span>
             </h1>
           </div>
 
