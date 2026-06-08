@@ -1,30 +1,36 @@
 const steps = [
-  { num: "01", title: "Drop or type your idea", desc: "Upload a screenshot, paste a video link, or just type what your video is about." },
-  { num: "02", title: "AI writes your hooks", desc: "Pick a style and platform. AI generates scroll-stopping hooks with virality scores." },
-  { num: "03", title: "Copy, paste, record", desc: "Grab the best hook, film your video. Full scripts, hashtags, and thumbnails included." },
-  { num: "04", title: "Go viral, repeat", desc: "Use Key Scenes to find the best moments from longer videos. Keep creating, keep growing." },
+  { n: "01", icon: "\uD83D\uDC4D", t: "Drop your idea", d: "Upload a screenshot, paste a video, or just type what your video is about." },
+  { n: "02", icon: "\uD83E\uDDE0", t: "AI writes your hooks", d: "Pick a style and platform. AI generates scroll-stopping hooks with virality scores." },
+  { n: "03", icon: "\uD83D\uDCCB", t: "Copy, paste, record", d: "Grab the best hook, film your video. Full scripts, hashtags, and thumbnails included." },
+  { n: "04", icon: "\uD83D\uDE80", t: "Go viral, repeat", d: "Use Key Scenes to find the best moments from longer videos. Keep creating." },
 ];
 
 export default function Architecture() {
   return (
-    <section id="architecture" className="bg-[#121214] px-5 py-24 text-[#fdfbf7] sm:px-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[#d4af37]">How it works</p>
-          <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">
+    <section id="architecture" className="bg-[#0a0a0f] px-6 py-24 sm:px-8 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(212,175,55,0.04),transparent_60%)]" />
+      <div className="mx-auto max-w-7xl relative">
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <span className="inline-flex items-center gap-2 px-3 py-1 glass rounded-full text-xs font-medium text-[#d4af37] tracking-wide mb-4">
+            How it works
+          </span>
+          <h2 className="text-4xl sm:text-5xl font-black tracking-[-0.04em] text-white">
             From idea to viral hook in seconds.
           </h2>
-          <p className="mt-5 text-base leading-8 text-[#fdfbf7]/68">
+          <p className="mt-4 text-zinc-400 text-lg">
             No complicated setup. No monthly fees. Just type your topic and let AI do the heavy lifting.
           </p>
         </div>
 
-        <div className="mt-14 grid gap-8 md:grid-cols-2">
-          {steps.map((step) => (
-            <div key={step.num} className="group border border-white/10 bg-[#121214] p-8 rounded-2xl transition hover:border-[#d4af37]/30 hover:bg-[#1a2332]/50">
-              <span className="text-4xl font-bold text-[#d4af37]/20 group-hover:text-[#d4af37]/40 transition">{step.num}</span>
-              <h3 className="mt-4 text-xl font-semibold">{step.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-[#fdfbf7]/55">{step.desc}</p>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {steps.map((s, i) => (
+            <div key={s.n} className="card p-6 group hover:-translate-y-1">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">{s.icon}</span>
+                <span className="text-4xl font-black text-zinc-800 group-hover:text-[#d4af37]/30 transition-colors">{s.n}</span>
+              </div>
+              <h3 className="text-lg font-bold text-white mb-2">{s.t}</h3>
+              <p className="text-sm text-zinc-500 leading-relaxed">{s.d}</p>
             </div>
           ))}
         </div>
