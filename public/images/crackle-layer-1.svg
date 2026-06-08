@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="glowLg"><feGaussianBlur stdDeviation="7"/></filter>
+  </defs>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- dark edges for depth -->
+    <g stroke="#0A0A0A" stroke-width="4">
+      <path d="M-20 280 L180 260 L350 320 L520 230 L700 320 L880 210 L1040 290 L1200 220 L1460 280"/>
+      <path d="M180 260 L220 70 L310 190 L350 320"/>
+      <path d="M220 70 L440 0 L530 150 L520 230"/>
+      <path d="M440 0 L660 -20 L740 60 L700 320"/>
+      <path d="M660 -20 L860 40 L880 210"/>
+      <path d="M880 210 L1000 130 L1130 200 L1200 220"/>
+      <path d="M350 320 L410 540 L240 660"/>
+      <path d="M410 540 L570 490 L670 660 L700 320"/>
+      <path d="M570 490 L740 420 L880 210"/>
+      <path d="M240 660 L470 740 L560 600 L670 660"/>
+      <path d="M470 740 L620 870 L810 760"/>
+      <path d="M810 760 L950 850 L1040 290"/>
+      <path d="M950 850 L1150 900 L1330 810 L1460 870"/>
+      <path d="M310 190 L150 380 L240 660"/>
+      <path d="M530 150 L670 280 L740 420"/>
+      <path d="M670 280 L860 380 L1000 130"/>
+      <path d="M860 380 L810 760"/>
+      <path d="M1130 200 L1260 390 L1330 810"/>
+      <path d="M1260 390 L1150 570 L1040 290"/>
+      <path d="M1150 570 L1030 700 L950 850"/>
+      <path d="M40 430 L150 380"/>
+      <path d="M740 60 L940 150 L1000 130"/>
+      <path d="M560 600 L700 480 L740 420"/>
+    </g>
+    <!-- gold lava core -->
+    <g stroke="#C9A227" stroke-width="2.5" opacity="0.9">
+      <path d="M-20 280 L180 260 L350 320 L520 230 L700 320 L880 210 L1040 290 L1200 220 L1460 280"/>
+      <path d="M180 260 L220 70 L310 190 L350 320"/>
+      <path d="M220 70 L440 0 L530 150 L520 230"/>
+      <path d="M440 0 L660 -20 L740 60 L700 320"/>
+      <path d="M660 -20 L860 40 L880 210"/>
+      <path d="M880 210 L1000 130 L1130 200 L1200 220"/>
+      <path d="M350 320 L410 540 L240 660"/>
+      <path d="M410 540 L570 490 L670 660 L700 320"/>
+      <path d="M570 490 L740 420 L880 210"/>
+      <path d="M240 660 L470 740 L560 600 L670 660"/>
+      <path d="M470 740 L620 870 L810 760"/>
+      <path d="M810 760 L950 850 L1040 290"/>
+      <path d="M950 850 L1150 900 L1330 810 L1460 870"/>
+      <path d="M310 190 L150 380 L240 660"/>
+      <path d="M530 150 L670 280 L740 420"/>
+      <path d="M670 280 L860 380 L1000 130"/>
+      <path d="M860 380 L810 760"/>
+      <path d="M1130 200 L1260 390 L1330 810"/>
+      <path d="M1260 390 L1150 570 L1040 290"/>
+      <path d="M1150 570 L1030 700 L950 850"/>
+      <path d="M40 430 L150 380"/>
+      <path d="M740 60 L940 150 L1000 130"/>
+      <path d="M560 600 L700 480 L740 420"/>
+    </g>
+    <!-- outer glow -->
+    <g stroke="#E8D98A" stroke-width="5" opacity="0.22" filter="url(#glow)">
+      <path d="M-20 280 L180 260 L350 320 L520 230 L700 320 L880 210 L1040 290 L1200 220 L1460 280"/>
+      <path d="M180 260 L220 70 L310 190 L350 320"/>
+      <path d="M220 70 L440 0 L530 150 L520 230"/>
+      <path d="M440 0 L660 -20 L740 60 L700 320"/>
+      <path d="M350 320 L410 540 L240 660"/>
+      <path d="M410 540 L570 490 L670 660 L700 320"/>
+      <path d="M240 660 L470 740 L560 600 L670 660"/>
+      <path d="M470 740 L620 870 L810 760"/>
+      <path d="M810 760 L950 850 L1040 290"/>
+      <path d="M310 190 L150 380 L240 660"/>
+      <path d="M670 280 L860 380 L1000 130"/>
+      <path d="M860 380 L810 760"/>
+      <path d="M1130 200 L1260 390 L1330 810"/>
+    </g>
+    <!-- lava pool glows at junctions -->
+    <g filter="url(#glowLg)" opacity="0.30">
+      <circle cx="220" cy="70" r="8" fill="#C9A227"/>
+      <circle cx="440" cy="0" r="9" fill="#C9A227"/>
+      <circle cx="660" cy="-20" r="8" fill="#C9A227"/>
+      <circle cx="180" cy="260" r="7" fill="#C9A227"/>
+      <circle cx="350" cy="320" r="8" fill="#C9A227"/>
+      <circle cx="700" cy="320" r="9" fill="#C9A227"/>
+      <circle cx="880" cy="210" r="8" fill="#C9A227"/>
+      <circle cx="410" cy="540" r="7" fill="#C9A227"/>
+      <circle cx="240" cy="660" r="9" fill="#C9A227"/>
+      <circle cx="470" cy="740" r="8" fill="#C9A227"/>
+      <circle cx="810" cy="760" r="9" fill="#C9A227"/>
+      <circle cx="950" cy="850" r="8" fill="#C9A227"/>
+      <circle cx="670" cy="280" r="7" fill="#C9A227"/>
+      <circle cx="860" cy="380" r="8" fill="#C9A227"/>
+      <circle cx="1150" cy="570" r="7" fill="#C9A227"/>
+      <circle cx="150" cy="380" r="7" fill="#C9A227"/>
+    </g>
+    <!-- bright lava centers -->
+    <g opacity="0.45">
+      <circle cx="220" cy="70" r="4" fill="#F5E6A0"/>
+      <circle cx="440" cy="0" r="5" fill="#F5E6A0"/>
+      <circle cx="660" cy="-20" r="4" fill="#F5E6A0"/>
+      <circle cx="350" cy="320" r="4" fill="#F5E6A0"/>
+      <circle cx="700" cy="320" r="5" fill="#F5E6A0"/>
+      <circle cx="880" cy="210" r="4" fill="#F5E6A0"/>
+      <circle cx="410" cy="540" r="4" fill="#F5E6A0"/>
+      <circle cx="240" cy="660" r="5" fill="#F5E6A0"/>
+      <circle cx="470" cy="740" r="4" fill="#F5E6A0"/>
+      <circle cx="810" cy="760" r="5" fill="#F5E6A0"/>
+      <circle cx="950" cy="850" r="4" fill="#F5E6A0"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900">
+  <defs>
+    <filter id="g2"><feGaussianBlur stdDeviation="2.5"/></filter>
+  </defs>
+  <g fill="none" stroke-linecap="round">
+    <!-- dark edges -->
+    <g stroke="#0A0A0A" stroke-width="2.5">
+      <path d="M40 580 L200 510 L380 590 L540 480 L710 570 L880 460 L1060 540 L1220 430 L1460 510"/>
+      <path d="M200 510 L160 270 L350 380 L380 590"/>
+      <path d="M160 270 L420 190 L540 480"/>
+      <path d="M420 190 L650 150 L710 570"/>
+      <path d="M650 150 L870 70 L880 460"/>
+      <path d="M870 70 L1050 150 L1060 540"/>
+      <path d="M1050 150 L1220 270 L1220 430"/>
+      <path d="M350 380 L270 630 L190 790"/>
+      <path d="M540 480 L680 660 L880 460"/>
+      <path d="M680 660 L830 740"/>
+      <path d="M270 630 L490 710 L680 660"/>
+      <path d="M490 710 L660 840 L830 740"/>
+      <path d="M830 740 L1000 820 L1060 540"/>
+      <path d="M1000 820 L1180 880 L1330 790"/>
+      <path d="M190 790 L420 870 L490 710"/>
+      <path d="M420 870 L600 930 L800 880"/>
+      <path d="M800 880 L680 660"/>
+    </g>
+    <!-- gold lava -->
+    <g stroke="#E8D98A" stroke-width="1.8" opacity="0.85">
+      <path d="M40 580 L200 510 L380 590 L540 480 L710 570 L880 460 L1060 540 L1220 430 L1460 510"/>
+      <path d="M200 510 L160 270 L350 380 L380 590"/>
+      <path d="M160 270 L420 190 L540 480"/>
+      <path d="M420 190 L650 150 L710 570"/>
+      <path d="M650 150 L870 70 L880 460"/>
+      <path d="M870 70 L1050 150 L1060 540"/>
+      <path d="M1050 150 L1220 270 L1220 430"/>
+      <path d="M350 380 L270 630 L190 790"/>
+      <path d="M540 480 L680 660 L880 460"/>
+      <path d="M680 660 L830 740"/>
+      <path d="M270 630 L490 710 L680 660"/>
+      <path d="M490 710 L660 840 L830 740"/>
+      <path d="M830 740 L1000 820 L1060 540"/>
+      <path d="M1000 820 L1180 880 L1330 790"/>
+      <path d="M190 790 L420 870 L490 710"/>
+      <path d="M420 870 L600 930 L800 880"/>
+      <path d="M800 880 L680 660"/>
+    </g>
+    <!-- inner glow -->
+    <g stroke="#F5E6A0" stroke-width="3" opacity="0.2" filter="url(#g2)">
+      <path d="M40 580 L200 510 L380 590 L540 480 L710 570 L880 460"/>
+      <path d="M160 270 L420 190 L540 480"/>
+      <path d="M650 150 L870 70 L880 460"/>
+      <path d="M350 380 L270 630 L190 790"/>
+      <path d="M540 480 L680 660 L880 460"/>
+      <path d="M490 710 L660 840 L830 740"/>
+    </g>
+    <!-- junction pools -->
+    <g opacity="0.35" filter="url(#g2)">
+      <circle cx="200" cy="510" r="5" fill="#C9A227"/>
+      <circle cx="160" cy="270" r="4" fill="#C9A227"/>
+      <circle cx="420" cy="190" r="5" fill="#C9A227"/>
+      <circle cx="650" cy="150" r="5" fill="#C9A227"/>
+      <circle cx="870" cy="70" r="4" fill="#C9A227"/>
+      <circle cx="350" cy="380" r="5" fill="#C9A227"/>
+      <circle cx="270" cy="630" r="4" fill="#C9A227"/>
+      <circle cx="490" cy="710" r="5" fill="#C9A227"/>
+      <circle cx="680" cy="660" r="5" fill="#C9A227"/>
+      <circle cx="830" cy="740" r="4" fill="#C9A227"/>
+      <circle cx="420" cy="870" r="4" fill="#C9A227"/>
+    </g>
+    <!-- bright centers -->
+    <g opacity="0.4">
+      <circle cx="200" cy="510" r="2.5" fill="#F5E6A0"/>
+      <circle cx="420" cy="190" r="2.5" fill="#F5E6A0"/>
+      <circle cx="650" cy="150" r="2.5" fill="#F5E6A0"/>
+      <circle cx="350" cy="380" r="2.5" fill="#F5E6A0"/>
+      <circle cx="490" cy="710" r="2.5" fill="#F5E6A0"/>
+      <circle cx="680" cy="660" r="2.5" fill="#F5E6A0"/>
+    </g>
+  </g>
+</svg>
