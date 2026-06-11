@@ -22,13 +22,13 @@ export async function POST(request: Request) {
   if (!topic.trim() && !transcript) return NextResponse.json({ error: "Topic or transcript required" }, { status: 400 });
   if (topic.length > 5000) return NextResponse.json({ error: "Topic too long" }, { status: 400 });
 
-  const cost = mode === "series" ? 3 : 1;
+  const cost = 1;
 
   let credits: number;
   try { credits = await getCredits(userId); } catch { return NextResponse.json({ error: "Could not check credits" }, { status: 500 }); }
 
   if (credits < cost) {
-    return NextResponse.json({ error: `Need ${cost} credits. You have ${credits}.` }, { status: 402 });
+    return NextResponse.json({ error: `Need ${cost} credit. You have ${credits}.` }, { status: 402 });
   }
 
   cooldowns.set(rateKey, now);

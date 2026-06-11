@@ -2,7 +2,7 @@ import { getAdmin } from "@/lib/supabase/admin";
 
 export async function getCredits(userId: string): Promise<number> {
   const admin = getAdmin();
-  if (!admin) return 3;
+  if (!admin) return 10;
 
   const { data, error } = await admin
     .from("users")

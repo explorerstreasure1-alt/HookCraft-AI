@@ -57,6 +57,10 @@ export default function Navbar() {
         <div className="hidden items-center gap-8 text-sm font-medium text-zinc-400 md:flex">
           {[
             { label: "Dashboard", href: "#dashboard" },
+            { label: "Auditor", href: "#auditor" },
+            { label: "Deconstructor", href: "#deconstructor" },
+            { label: "PowerLab", href: "#powerlab" },
+            { label: "DNA", href: "#dna" },
             { label: "Scene Editor", href: "#keyscenes" },
             { label: "Pricing", href: "#pricing" },
           ].map((link) => (
@@ -120,6 +124,10 @@ export default function Navbar() {
         <div className="glass border-t border-[rgba(201,162,39,0.1)] px-6 py-4 flex flex-col gap-3">
           {[
             { label: "Dashboard", href: "#dashboard" },
+            { label: "Auditor", href: "#auditor" },
+            { label: "Deconstructor", href: "#deconstructor" },
+            { label: "PowerLab", href: "#powerlab" },
+            { label: "DNA", href: "#dna" },
             { label: "Scene Editor", href: "#keyscenes" },
             { label: "Pricing", href: "#pricing" },
           ].map((link) => (

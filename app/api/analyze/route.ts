@@ -2,8 +2,15 @@ import { NextResponse } from "next/server";
 import { Mistral } from "@mistralai/mistralai";
 
 const client = new Mistral({ apiKey: process.env.MISTRAL_API_KEY ?? "" });
+const cooldowns = new Map<string, number>();
 
 export async function POST(request: Request) {
+  const userId = request.headers.get("x-user-id") || "anonymous";
+  const now = Date.now();
+  if (now - (cooldowns.get(userId) ?? 0) < 15_000) {
+    return NextResponse.json({ error: "Wait before analyzing again." }, { status: 429 });
+  }
+
   let body: { image?: string };
   try { body = await request.json(); } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
@@ -37,6 +44,7 @@ export async function POST(request: Request) {
 
     try {
       const parsed = JSON.parse(text);
+      cooldowns.set(userId, now);
       return NextResponse.json(parsed);
     } catch {
       return NextResponse.json({ summary: text.slice(0, 200), topic: text.slice(0, 100), hooks: [] });

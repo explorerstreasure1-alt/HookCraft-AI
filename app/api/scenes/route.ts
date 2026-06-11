@@ -2,10 +2,17 @@ import { NextResponse } from "next/server";
 import { getAdmin } from "@/lib/supabase/admin";
 
 const MISTRAL_KEY = process.env.MISTRAL_API_KEY;
+const cooldowns = new Map<string, number>();
 
 export async function POST(request: Request) {
   if (!MISTRAL_KEY) {
     return NextResponse.json({ error: "API key missing" }, { status: 500 });
+  }
+
+  const userId = request.headers.get("x-user-id") || "anonymous";
+  const now = Date.now();
+  if (now - (cooldowns.get(userId) ?? 0) < 30_000) {
+    return NextResponse.json({ error: "Wait before analyzing again." }, { status: 429 });
   }
 
   let body: { frames?: string[]; transcript?: string };
@@ -48,6 +55,7 @@ export async function POST(request: Request) {
 
     try { getAdmin()?.rpc("increment_stat", { stat_key: "scenes" }); } catch {}
 
+    cooldowns.set(userId, now);
     try { return NextResponse.json(JSON.parse(text)); }
     catch { return NextResponse.json({ scenes: [] }); }
   } catch (err) {

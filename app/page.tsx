@@ -3,6 +3,10 @@ import Hero from "@/components/Hero";
 import Architecture from "@/components/Architecture";
 import HookGenerator from "@/components/HookGenerator";
 import KeyScenes from "@/components/KeyScenes";
+import ContentAuditor from "@/components/ContentAuditor";
+import ViralDeconstructor from "@/components/ViralDeconstructor";
+import PowerLab from "@/components/PowerLab";
+import CreatorDNA from "@/components/CreatorDNA";
 import Pricing from "@/components/Pricing";
 import ProductionLogic from "@/components/ProductionLogic";
 import Footer from "@/components/Footer";
@@ -19,6 +23,10 @@ export default function Page() {
       <Architecture />
       <HookGenerator />
       <KeyScenes />
+      <ContentAuditor />
+      <ViralDeconstructor />
+      <PowerLab />
+      <CreatorDNA />
       <Pricing />
       <ProductionLogic />
       <Footer />

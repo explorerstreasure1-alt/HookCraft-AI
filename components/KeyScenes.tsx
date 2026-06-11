@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { showToast } from "./Toast";
+import { extractFrames, extractAudio, floatArrayToB64, parseTime, fmtTime, clamp } from "@/lib/media.client";
 
 type Scene = {
   id: number;
@@ -14,76 +15,6 @@ type Scene = {
   text: string;
   frameUrl: string;
 };
-
-function extractFrames(file: File, count: number): Promise<{ url: string; time: number }[]> {
-  return new Promise((resolve) => {
-    const video = document.createElement("video");
-    video.preload = "metadata"; video.muted = true;
-    const url = URL.createObjectURL(file); video.src = url;
-    video.onloadedmetadata = async () => {
-      const duration = Math.min(video.duration, 300);
-      const interval = duration / count;
-      const frames: { url: string; time: number }[] = [];
-      const canvas = document.createElement("canvas"); canvas.width = 320; canvas.height = 180;
-      const ctx = canvas.getContext("2d")!;
-      for (let i = 0; i < count; i++) {
-        const t = Math.min(i * interval, duration - 0.1);
-        video.currentTime = t;
-        await new Promise<void>(r => { video.onseeked = () => r(); });
-        ctx.drawImage(video, 0, 0, 320, 180);
-        frames.push({ url: canvas.toDataURL("image/jpeg", 0.5), time: t });
-      }
-      URL.revokeObjectURL(url); video.remove(); resolve(frames);
-    };
-    video.onerror = () => { URL.revokeObjectURL(url); resolve([]); };
-  });
-}
-
-async function extractAudio(file: File): Promise<Float32Array> {
-  const audioCtx = new AudioContext({ sampleRate: 16000 });
-  const ab = await file.arrayBuffer();
-  const audioBuffer = await audioCtx.decodeAudioData(ab.slice(0));
-  const duration = Math.min(audioBuffer.duration, 300);
-  const sampleCount = Math.floor(duration * 16000);
-  const offlineCtx = new OfflineAudioContext(1, sampleCount, 16000);
-  const source = offlineCtx.createBufferSource();
-  source.buffer = audioBuffer;
-  source.connect(offlineCtx.destination);
-  source.start(0, 0, duration);
-  const rendered = await offlineCtx.startRendering();
-  audioCtx.close();
-  return rendered.getChannelData(0);
-}
-
-async function audioToBase64(data: Float32Array): Promise<string> {
-  const wav = new ArrayBuffer(44 + data.length * 2);
-  const view = new DataView(wav);
-  function ws(o: number, s: string) { for (let i = 0; i < s.length; i++) view.setUint8(o + i, s.charCodeAt(i)); }
-  ws(0, "RIFF"); view.setUint32(4, wav.byteLength - 8, true); ws(8, "WAVE"); ws(12, "fmt ");
-  view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
-  view.setUint32(24, 16000, true); view.setUint32(28, 32000, true); view.setUint16(32, 2, true);
-  view.setUint16(34, 16, true); ws(36, "data"); view.setUint32(40, data.length * 2, true);
-  let off = 44;
-  for (let i = 0; i < data.length; i++) { view.setInt16(off, Math.max(-1, Math.min(1, data[i])) * 0x7FFF, true); off += 2; }
-  const bytes = new Uint8Array(wav);
-  let bin = "";
-  for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
-  return btoa(bin);
-}
-
-function parseTime(t: string): number {
-  const parts = t.split(":").map(Number);
-  if (parts.length === 2) return parts[0] * 60 + (parts[1] || 0);
-  return parts[0] || 0;
-}
-
-function fmtTime(s: number): string {
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60);
-  return `${m}:${sec.toString().padStart(2, "0")}`;
-}
-
-function clamp(v: number, min: number, max: number) { return Math.max(min, Math.min(max, v)); }
 
 export default function KeyScenes() {
   const [dragOver, setDragOver] = useState(false);
@@ -158,7 +89,7 @@ export default function KeyScenes() {
       const [frames] = await Promise.all([
         isVideo ? extractFrames(file, 10) : Promise.resolve([]),
         (async () => {
-          if (isVideo) { const a = await extractAudio(file); audioB64 = await audioToBase64(a); }
+          if (isVideo) { const a = await extractAudio(file); audioB64 = await floatArrayToB64(a); }
           else { audioB64 = await new Promise<string>(r => { const rd = new FileReader(); rd.onload = () => r((rd.result as string).split(",")[1]); rd.readAsDataURL(file); }); }
         })(),
       ]);
