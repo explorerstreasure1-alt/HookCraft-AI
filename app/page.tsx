@@ -17,6 +17,7 @@ import { ToastContainer } from "@/components/Toast";
 import DailyReward from "@/components/DailyReward";
 import SpinWheel from "@/components/SpinWheel";
 import QuestBoard from "@/components/QuestBoard";
+import ReferralWidget from "@/components/ReferralWidget";
 
 export default function Page() {
   return (
@@ -39,6 +40,7 @@ export default function Page() {
       <DailyReward />
       <SpinWheel />
       <QuestBoard />
+      <ReferralWidget />
       <ToastContainer />
     </main>
   );

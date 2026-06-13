@@ -44,5 +44,15 @@ export async function updateSession(request: NextRequest) {
     });
   }
 
+  const refCode = request.nextUrl.searchParams.get("ref");
+  if (refCode) {
+    response.cookies.set("hc_ref", refCode.toUpperCase(), {
+      maxAge: 60 * 60 * 24 * 30,
+      httpOnly: false,
+      sameSite: "lax",
+      path: "/",
+    });
+  }
+
   return response;
 }

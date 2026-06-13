@@ -3,7 +3,7 @@
 -- Run in SQL Editor: https://dbwhzmpfgfgemifiuhrp.supabase.co
 -- ============================================
 
--- 1. Users tablosu (kredi takibi + gamification)
+-- 1. Users tablosu (kredi takibi + gamification + monetization)
 CREATE TABLE IF NOT EXISTS public.users (
   id         TEXT PRIMARY KEY,
   credits    INTEGER NOT NULL DEFAULT 1000,
@@ -16,6 +16,9 @@ CREATE TABLE IF NOT EXISTS public.users (
   last_quest_reset TIMESTAMPTZ,
   quests_completed INTEGER NOT NULL DEFAULT 0,
   total_generations INTEGER NOT NULL DEFAULT 0,
+  plan       TEXT NOT NULL DEFAULT 'free',
+  referral_code TEXT UNIQUE,
+  referred_by TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -33,9 +36,12 @@ END $$;
 -- 2. Yeni kayıt olunca otomatik users tablosuna ekle
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  new_code TEXT;
 BEGIN
-  INSERT INTO public.users (id, credits, last_credit_reset, xp, level, streak, last_login, quests_completed, total_generations)
-  VALUES (new.id, 1000, NOW(), 0, 1, 0, NOW(), 0, 0)
+  new_code := 'HC-' || substr(md5(random()::text || clock_timestamp()::text), 1, 6);
+  INSERT INTO public.users (id, credits, last_credit_reset, xp, level, streak, last_login, quests_completed, total_generations, plan, referral_code)
+  VALUES (new.id, 1000, NOW(), 0, 1, 0, NOW(), 0, 0, 'free', upper(new_code))
   ON CONFLICT (id) DO NOTHING;
   RETURN new;
 END;
@@ -67,7 +73,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 4. Upgrade: existing tabloya gamification kolonları ekle
+-- 4. Upgrade: existing tabloya tüm yeni kolonları ekle
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_credit_reset TIMESTAMPTZ NOT NULL DEFAULT NOW();
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS xp INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS level INTEGER NOT NULL DEFAULT 1;
@@ -77,7 +83,23 @@ ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_spin TIMESTAMPTZ;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_quest_reset TIMESTAMPTZ;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS quests_completed INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS total_generations INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS plan TEXT NOT NULL DEFAULT 'free';
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS referral_code TEXT;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS referred_by TEXT;
 
--- 5. Check
+-- 5. Mevcut kullanıcılara referral code ata (boş olanlara)
+DO $$
+DECLARE
+  u RECORD;
+  new_code TEXT;
+BEGIN
+  FOR u IN SELECT id FROM public.users WHERE referral_code IS NULL
+  LOOP
+    new_code := 'HC-' || substr(md5(random()::text || clock_timestamp()::text || u.id), 1, 6);
+    UPDATE public.users SET referral_code = upper(new_code) WHERE id = u.id;
+  END LOOP;
+END $$;
+
+-- 6. Check
 SELECT * FROM public.users;
 SELECT * FROM public.stats;

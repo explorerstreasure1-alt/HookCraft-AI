@@ -10,6 +10,9 @@ export type UserProfile = {
   last_quest_reset: string | null;
   quests_completed: number;
   total_generations: number;
+  referral_code: string | null;
+  referred_by: string | null;
+  plan: string;
 };
 
 export async function getCredits(userId: string): Promise<number> {
@@ -90,19 +93,33 @@ export async function addCredits(userId: string, amount: number): Promise<void> 
 
 export async function getProfile(userId: string): Promise<UserProfile> {
   const admin = getAdmin();
-  if (!admin) return { credits: 1000, xp: 0, level: 1, streak: 0, last_login: null, last_spin: null, last_quest_reset: null, quests_completed: 0, total_generations: 0 };
+  if (!admin) return { credits: 1000, xp: 0, level: 1, streak: 0, last_login: null, last_spin: null, last_quest_reset: null, quests_completed: 0, total_generations: 0, referral_code: null, referred_by: null, plan: "free" };
 
   const { data, error } = await admin
     .from("users")
-    .select("credits, xp, level, streak, last_login, last_spin, last_quest_reset, quests_completed, total_generations")
+    .select("credits, xp, level, streak, last_login, last_spin, last_quest_reset, quests_completed, total_generations, referral_code, referred_by, plan")
     .eq("id", userId)
     .single();
 
   if (error) {
     if (error.code === "PGRST116") {
       const now = new Date().toISOString();
-      await admin.from("users").insert({ id: userId, credits: 1000, last_credit_reset: now, xp: 0, level: 1, streak: 0, last_login: now, quests_completed: 0, total_generations: 0 });
-      return { credits: 1000, xp: 0, level: 1, streak: 0, last_login: now, last_spin: null, last_quest_reset: null, quests_completed: 0, total_generations: 0 };
+      const code = generateReferralCode();
+      await admin.from("users").insert({ 
+        id: userId, 
+        credits: 1000, 
+        last_credit_reset: now, 
+        xp: 0, 
+        level: 1, 
+        streak: 0, 
+        last_login: now, 
+        quests_completed: 0, 
+        total_generations: 0,
+        referral_code: code,
+        referred_by: null,
+        plan: "free"
+      });
+      return { credits: 1000, xp: 0, level: 1, streak: 0, last_login: now, last_spin: null, last_quest_reset: null, quests_completed: 0, total_generations: 0, referral_code: code, referred_by: null, plan: "free" };
     }
     throw error;
   }
@@ -117,7 +134,19 @@ export async function getProfile(userId: string): Promise<UserProfile> {
     last_quest_reset: data?.last_quest_reset,
     quests_completed: data?.quests_completed ?? 0,
     total_generations: data?.total_generations ?? 0,
+    referral_code: data?.referral_code,
+    referred_by: data?.referred_by,
+    plan: data?.plan ?? "free",
   };
+}
+
+function generateReferralCode(): string {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "HC-";
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
 }
 
 export function xpForLevel(level: number): number {
@@ -186,4 +215,52 @@ export async function completeQuest(userId: string): Promise<number> {
   const newCount = profile.quests_completed + 1;
   await admin.from("users").update({ quests_completed: newCount }).eq("id", userId);
   return newCount;
+}
+
+export async function applyReferralCode(newUserId: string, code: string): Promise<{ success: boolean; bonus: number }> {
+  const admin = getAdmin();
+  if (!admin) return { success: false, bonus: 0 };
+
+  const profile = await getProfile(newUserId);
+  if (profile.referred_by) {
+    return { success: false, bonus: 0 };
+  }
+
+  const { data: referrer } = await admin
+    .from("users")
+    .select("id")
+    .eq("referral_code", code)
+    .single();
+
+  if (!referrer || referrer.id === newUserId) {
+    return { success: false, bonus: 0 };
+  }
+
+  await admin.from("users").update({ referred_by: referrer.id }).eq("id", newUserId);
+  
+  await addCredits(newUserId, 500);
+  await addCredits(referrer.id, 500);
+  await addXp(newUserId, 50);
+  await addXp(referrer.id, 50);
+
+  return { success: true, bonus: 500 };
+}
+
+export async function getReferralStats(userId: string): Promise<{ code: string; count: number; credits: number }> {
+  const admin = getAdmin();
+  if (!admin) return { code: "", count: 0, credits: 0 };
+
+  const profile = await getProfile(userId);
+  const code = profile.referral_code || generateReferralCode();
+
+  if (!profile.referral_code) {
+    await admin.from("users").update({ referral_code: code }).eq("id", userId);
+  }
+
+  const { count } = await admin
+    .from("users")
+    .select("*", { count: "exact", head: true })
+    .eq("referred_by", userId);
+
+  return { code, count: count || 0, credits: (count || 0) * 500 };
 }

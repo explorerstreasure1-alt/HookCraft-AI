@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyLemonSqueezySignature } from "@/lib/lemonsqueezy";
-import { addCredits } from "@/lib/storage";
+import { addCredits, addXp } from "@/lib/storage";
+import { getAdmin } from "@/lib/supabase/admin";
 
 export async function POST(request: Request) {
   const rawBody = await request.text();
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
         total?: number;
         variant_name?: string;
         first_order_item?: { variant_name?: string; product_name?: string };
+        status?: string;
       };
     };
   };
@@ -50,19 +52,71 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing user_id" }, { status: 400 });
   }
 
+  // Handle subscription events
+  if (eventName === "subscription_created" || eventName === "subscription_updated") {
+    const status = payload.data?.attributes?.status;
+    if (status === "active" || status === "resumed") {
+      try {
+        await handleSubscription(userId, productName);
+        console.log("[webhook] subscription activated for", userId);
+      } catch (err) {
+        console.error("[webhook] subscription error:", err);
+      }
+    }
+    return NextResponse.json({ received: true });
+  }
+
+  if (eventName === "subscription_cancelled" || eventName === "subscription_expired") {
+    try {
+      const admin = getAdmin();
+      if (admin) {
+        await admin.from("users").update({ plan: "free" }).eq("id", userId);
+      }
+      console.log("[webhook] subscription cancelled for", userId);
+    } catch (err) {
+      console.error("[webhook] cancel error:", err);
+    }
+    return NextResponse.json({ received: true });
+  }
+
+  // Handle one-time orders
   if (eventName !== "order_created") {
     return NextResponse.json({ received: true });
   }
 
-  let creditAmount = 25;
+  let creditAmount = 50;
   const total = payload.data?.attributes?.total ?? 0;
-  if (total >= 1400) creditAmount = 500;
+  
+  // Credit packs (new pricing)
+  if (total >= 2400) creditAmount = 1000;
+  else if (total >= 900) creditAmount = 200;
+  else if (total >= 400) creditAmount = 50;
+  
+  // Lifetime deal
+  else if (total >= 9000) creditAmount = 999999;
+
+  // Legacy pricing fallback
+  else if (total >= 1400) creditAmount = 500;
   else if (total >= 400) creditAmount = 100;
+  else if (total >= 150) creditAmount = 25;
 
   console.log("[webhook] adding", creditAmount, "credits to", userId, "(total:", total, "cents)");
 
   try {
     await addCredits(userId, creditAmount);
+    
+    // Add XP for purchase
+    const xpAmount = Math.floor(creditAmount / 10);
+    await addXp(userId, xpAmount);
+    
+    // Update plan if lifetime
+    if (total >= 9000) {
+      const admin = getAdmin();
+      if (admin) {
+        await admin.from("users").update({ plan: "lifetime" }).eq("id", userId);
+      }
+    }
+    
     console.log("[webhook] SUCCESS");
   } catch (err) {
     console.error("[webhook] DB error:", err);
@@ -70,4 +124,27 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ received: true });
+}
+
+async function handleSubscription(userId: string, productName: string) {
+  const admin = getAdmin();
+  if (!admin) return;
+
+  let plan = "creator";
+  let credits = 50000;
+
+  const lowerName = productName.toLowerCase();
+  if (lowerName.includes("agency")) {
+    plan = "agency";
+    credits = 999999;
+  } else if (lowerName.includes("pro")) {
+    plan = "pro";
+    credits = 999999;
+  }
+
+  await admin.from("users").update({ 
+    plan, 
+    credits,
+    last_credit_reset: new Date().toISOString()
+  }).eq("id", userId);
 }
