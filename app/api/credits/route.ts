@@ -12,6 +12,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ credits, userId });
   } catch (err) {
     console.error("[credits] error:", err);
-    return NextResponse.json({ credits: 3, userId });
+    return NextResponse.json({ credits: 1000, userId });
   }
 }

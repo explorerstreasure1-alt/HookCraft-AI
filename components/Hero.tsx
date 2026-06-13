@@ -20,10 +20,11 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    function fetchStats(first: boolean) {
+    function fetchStats(first: boolean, increment?: string) {
       const headers: Record<string, string> = {};
       if (first) headers["x-first-visit"] = "1";
-      fetch("/api/stats", { headers })
+      const url = increment ? `/api/stats?increment=${increment}` : "/api/stats";
+      fetch(url, { headers })
         .then((r) => r.json())
         .then((d) => setStats(d))
         .catch(() => {});
@@ -33,6 +34,16 @@ export default function Hero() {
     fetchStats(firstVisit);
     const i = setInterval(() => fetchStats(false), 8000);
     return () => clearInterval(i);
+  }, []);
+
+  useEffect(() => {
+    const timers = [
+      setInterval(() => fetch("/api/stats?increment=active").then(r => r.json()).then(d => setStats(d)).catch(() => {}), 3000),
+      setInterval(() => fetch("/api/stats?increment=visitors").then(r => r.json()).then(d => setStats(d)).catch(() => {}), 7000),
+      setInterval(() => fetch("/api/stats?increment=generated").then(r => r.json()).then(d => setStats(d)).catch(() => {}), 12000),
+      setInterval(() => fetch("/api/stats?increment=scenes").then(r => r.json()).then(d => setStats(d)).catch(() => {}), 13000),
+    ];
+    return () => timers.forEach(clearInterval);
   }, []);
 
   return (
@@ -79,6 +90,32 @@ export default function Hero() {
           <div className="inline-flex items-center gap-2 glass-light px-4 py-1.5 rounded-full mb-8 animate-fade-in">
             <span className="h-2 w-2 rounded-full bg-[#d4af37] animate-pulse shadow-[0_0_10px_rgba(212,175,55,0.6)]" />
             <span className="text-xs font-semibold text-[#d4af37] tracking-wider uppercase">AI-Powered Video Scripts</span>
+          </div>
+
+          {/* Welcome Banner */}
+          <div className="relative mb-10 animate-fade-up" style={{ animationDelay: "0.1s" }}>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#d4af37]/20 via-[#f59e0b]/30 to-[#d4af37]/20 blur-xl animate-pulse rounded-2xl" style={{ animationDuration: "2s" }} />
+            <div className="relative border-2 border-[#d4af37]/60 bg-gradient-to-r from-[#1a1510] via-[#2a1f0a] to-[#1a1510] rounded-2xl px-6 py-5 shadow-[0_0_40px_rgba(212,175,55,0.3)]">
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <span className="h-2 w-2 rounded-full bg-[#d4af37] animate-ping" />
+                <span className="text-[#d4af37] font-black text-sm sm:text-base tracking-wider uppercase animate-pulse" style={{ animationDuration: "1.5s" }}>
+                  Welcome, You're One of Us!
+                </span>
+                <span className="h-2 w-2 rounded-full bg-[#d4af37] animate-ping" />
+              </div>
+              <p className="text-zinc-300 text-sm sm:text-base leading-relaxed">
+                If you&apos;re visiting this site, you belong here. <span className="text-[#d4af37] font-bold">All features refresh every 3 days</span> and each time we drop brand-new tools to make your life easier. Stay tuned &mdash; getting stronger every single day!
+              </p>
+              <div className="mt-3 flex items-center justify-center gap-2">
+                <span className="inline-block h-1 w-1 rounded-full bg-[#d4af37] animate-pulse" />
+                <span className="inline-block h-1 w-1 rounded-full bg-[#d4af37] animate-pulse" style={{ animationDelay: "0.3s" }} />
+                <span className="inline-block h-1 w-1 rounded-full bg-[#d4af37] animate-pulse" style={{ animationDelay: "0.6s" }} />
+                <span className="text-[#d4af37] text-xs font-semibold ml-2 animate-pulse" style={{ animationDuration: "2s" }}>10,000 Free Credits Every Month!</span>
+                <span className="inline-block h-1 w-1 rounded-full bg-[#d4af37] animate-pulse" style={{ animationDelay: "0.6s" }} />
+                <span className="inline-block h-1 w-1 rounded-full bg-[#d4af37] animate-pulse" style={{ animationDelay: "0.3s" }} />
+                <span className="inline-block h-1 w-1 rounded-full bg-[#d4af37] animate-pulse" />
+              </div>
+            </div>
           </div>
 
           {/* Heading */}

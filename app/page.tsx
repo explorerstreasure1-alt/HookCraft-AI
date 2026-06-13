@@ -14,6 +14,9 @@ import CookieConsent from "@/components/CookieConsent";
 import ScrollToTop from "@/components/ScrollToTop";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import { ToastContainer } from "@/components/Toast";
+import DailyReward from "@/components/DailyReward";
+import SpinWheel from "@/components/SpinWheel";
+import QuestBoard from "@/components/QuestBoard";
 
 export default function Page() {
   return (
@@ -33,6 +36,9 @@ export default function Page() {
       <CookieConsent />
       <ScrollToTop />
       <KeyboardShortcuts />
+      <DailyReward />
+      <SpinWheel />
+      <QuestBoard />
       <ToastContainer />
     </main>
   );

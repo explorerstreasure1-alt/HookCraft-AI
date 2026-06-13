@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 export default function Navbar() {
   const { user, signOut } = useAuth();
   const [credits, setCredits] = useState<number | null>(null);
+  const [streak, setStreak] = useState(0);
+  const [level, setLevel] = useState(1);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -13,10 +15,18 @@ export default function Navbar() {
     fetch("/api/credits").then(r => r.json()).then((d: { credits: number }) => setCredits(d.credits)).catch(() => {});
   }
 
+  function fetchProfile() {
+    fetch("/api/rewards").then(r => r.json()).then((d) => {
+      setStreak(d.streak || 0);
+      setLevel(d.level || 1);
+    }).catch(() => {});
+  }
+
   useEffect(() => {
     fetchCredits();
+    fetchProfile();
     const i = setInterval(fetchCredits, 30000);
-    function onVisible() { if (document.visibilityState === "visible") fetchCredits(); }
+    function onVisible() { if (document.visibilityState === "visible") { fetchCredits(); fetchProfile(); } }
     function onScroll() { setScrolled(window.scrollY > 20); }
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -77,6 +87,22 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
+          {/* Streak badge */}
+          {streak > 0 && (
+            <span className="hidden sm:inline-flex items-center gap-1.5 bg-[#1E1E18] border border-orange-500/25 rounded-xl px-2.5 py-1.5 transition-all duration-300 hover:border-orange-500/45">
+              <span className="text-sm">🔥</span>
+              <span className="text-xs font-bold text-orange-400 font-mono">{streak}</span>
+            </span>
+          )}
+
+          {/* Level badge */}
+          {level > 1 && (
+            <span className="hidden sm:inline-flex items-center gap-1.5 bg-[#1E1E18] border border-purple-500/25 rounded-xl px-2.5 py-1.5 transition-all duration-300 hover:border-purple-500/45">
+              <span className="text-sm">⭐</span>
+              <span className="text-xs font-bold text-purple-400 font-mono">Lv{level}</span>
+            </span>
+          )}
+
           {/* Credits badge */}
           {credits !== null && (
             <span className="hidden sm:inline-flex items-center gap-2 bg-[#1E1E18] border border-[rgba(201,162,39,0.25)] rounded-xl px-3 py-1.5 transition-all duration-300 hover:border-[rgba(201,162,39,0.45)]">
